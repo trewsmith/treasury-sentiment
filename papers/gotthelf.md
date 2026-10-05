@@ -1,4 +1,4 @@
-# Author (Year) — Title
+# Gotthelf, 2019, News Sentiment - A New Yield Curve Factor
 
 ## 1. Research Question
 
