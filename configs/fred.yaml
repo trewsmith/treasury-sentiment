@@ -1,0 +1,43 @@
+# FRED market series for Treasury Sentiment
+# API docs: https://fred.stlouisfed.org/docs/api/fred/
+
+start_date: "2000-01-01"
+# end_date: null  # defaults to today
+
+series:
+  DGS10:
+    name: "10-Year Treasury Constant Maturity Rate"
+    units: "Percent"
+    frequency: "Daily"
+    role: "core_outcome"
+  DGS2:
+    name: "2-Year Treasury Constant Maturity Rate"
+    units: "Percent"
+    frequency: "Daily"
+    role: "control"
+  DFF:
+    name: "Effective Federal Funds Rate"
+    units: "Percent"
+    frequency: "Daily"
+    role: "control"
+  VIXCLS:
+    name: "CBOE Volatility Index (VIX)"
+    units: "Index"
+    frequency: "Daily"
+    role: "control"
+  DTWEXBGS:
+    name: "Trade Weighted U.S. Dollar Index: Broad, Goods and Services"
+    units: "Index (Jan 2006=100)"
+    frequency: "Daily"
+    role: "dollar_proxy"
+  DEXUSEU:
+    name: "U.S. / Euro Foreign Exchange Rate"
+    units: "USD per EUR"
+    frequency: "Daily"
+    role: "dollar_proxy"
+  BAMLH0A0HYM2:
+    name: "ICE BofA US High Yield Index Option-Adjusted Spread"
+    units: "Percent"
+    frequency: "Daily"
+    role: "credit_risk"
+    # FRED note (Apr 2026+): only ~3 years of observations distributed via API

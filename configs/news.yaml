@@ -1,0 +1,93 @@
+# News ingestion config for Treasury Sentiment
+# Prefer RSS / official JSON / GDELT. Avoid Bloomberg scraping.
+
+# Fed JSON covers multi-year official docs. GDELT DOC is densest for ~90 days.
+lookback_years: 0.25
+gdelt_sleep_seconds: 6.5
+body_fetch:
+  enabled: true
+  # Cap keeps student runs tractable; Fed monetary/speeches/testimony prioritized
+  max_articles: 1800
+  sleep_seconds: 0.35
+  sources_priority:
+    - federal_reserve
+    - cnbc
+    - marketwatch
+    - investing
+    - reuters
+    - yahoo_finance
+    - google_news
+    - seeking_alpha
+    - guardian
+
+rss_feeds:
+  marketwatch:
+    - {url: "https://feeds.content.dowjones.io/public/rss/mw_topstories", section: "topstories"}
+    - {url: "https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines", section: "realtime"}
+    - {url: "https://feeds.content.dowjones.io/public/rss/mw_bulletins", section: "bulletins"}
+    - {url: "https://feeds.content.dowjones.io/public/rss/mw_marketpulse", section: "marketpulse"}
+  cnbc:
+    - {url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114", section: "top_news"}
+    - {url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=20910258", section: "economy"}
+    - {url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664", section: "finance"}
+    - {url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069", section: "bonds"}
+  investing:
+    - {url: "https://www.investing.com/rss/news.rss", section: "news"}
+    - {url: "https://www.investing.com/rss/news_95.rss", section: "economy"}
+    - {url: "https://www.investing.com/rss/news_25.rss", section: "bonds"}
+    - {url: "https://www.investing.com/rss/news_14.rss", section: "stock_market"}
+  federal_reserve:
+    - {url: "https://www.federalreserve.gov/feeds/press_all.xml", section: "press_all"}
+    - {url: "https://www.federalreserve.gov/feeds/press_monetary.xml", section: "press_monetary"}
+    - {url: "https://www.federalreserve.gov/feeds/press_other.xml", section: "press_other"}
+  seeking_alpha:
+    - {url: "https://seekingalpha.com/market_currents.xml", section: "market_currents"}
+    - {url: "https://seekingalpha.com/feed.xml", section: "main"}
+  guardian:
+    - {url: "https://www.theguardian.com/business/economics/rss", section: "economics"}
+    - {url: "https://www.theguardian.com/business/rss", section: "business"}
+
+google_news_queries:
+  - {query: "U.S. Treasury yield OR FOMC OR \"federal reserve\" rates", section: "treasury_fed"}
+  - {query: "\"10-year\" Treasury OR \"2-year\" Treasury OR bond market", section: "treasuries"}
+  - {query: "inflation CPI PPI Federal Reserve", section: "inflation"}
+  - {query: "Treasury auction OR \"Treasury supply\" OR \"debt ceiling\"", section: "supply_fiscal"}
+  - {query: "\"interest rates\" bonds stocks Wall Street", section: "rates_markets"}
+  - {query: "Treasury yields", section: "treasury_yields"}
+  - {query: "FOMC decision", section: "fomc_decision"}
+  - {query: "Federal Reserve interest rates", section: "fed_rates"}
+  - {query: "10-year Treasury note", section: "ten_year"}
+  - {query: "2-year Treasury note", section: "two_year"}
+  - {query: "CPI inflation report", section: "cpi"}
+  - {query: "PCE inflation Federal Reserve", section: "pce"}
+  - {query: "Treasury auction results", section: "auction"}
+  - {query: "bond market selloff", section: "bond_selloff"}
+  - {query: "yield curve inversion", section: "yield_curve"}
+  - {query: "federal funds rate", section: "fed_funds"}
+  - {query: "quantitative tightening Fed", section: "qt"}
+  - {query: "TIPS yields breakeven inflation", section: "tips"}
+  - {query: "mortgage rates Treasury yields", section: "mortgage"}
+  - {query: "dollar index Treasury yields", section: "dollar"}
+  - {query: "investment grade credit spreads", section: "ig_credit"}
+  - {query: "high yield bonds Federal Reserve", section: "hy_credit"}
+  - {query: "Jerome Powell speech rates", section: "powell"}
+  - {query: "Treasury refunding announcement", section: "refunding"}
+  - {query: "jobs report payrolls bond market", section: "payrolls"}
+
+# Yahoo Finance public RSS is currently 404/429; headlines come via GDELT + Google News.
+# Reuters public feeds are dead; headlines come via GDELT domain filter.
+
+gdelt:
+  # 2-day windows over ~90 days × 2 queries ≈ 90 requests (~10–15 min)
+  window_days: 2
+  maxrecords: 250
+  queries:
+    - name: treasury_core
+      query: '(treasury OR "bond yield" OR FOMC OR "Federal Reserve" OR "interest rate") (domain:cnbc.com OR domain:marketwatch.com OR domain:investing.com OR domain:reuters.com OR domain:finance.yahoo.com OR domain:yahoo.com) sourcelang:english'
+    - name: yields_bonds
+      query: '("10-year" OR "2-year" OR Treasuries OR "Treasury yields") (domain:cnbc.com OR domain:marketwatch.com OR domain:investing.com OR domain:reuters.com) sourcelang:english'
+
+fed_json:
+  - {name: press, url: "https://www.federalreserve.gov/json/ne-press.json", section_field: pt}
+  - {name: speeches, url: "https://www.federalreserve.gov/json/ne-speeches.json", section: "speech"}
+  - {name: testimony, url: "https://www.federalreserve.gov/json/ne-testimony.json", section: "testimony"}
