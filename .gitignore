@@ -13,3 +13,10 @@ data/raw/**
 data/interim/**
 !data/interim/.gitkeep
 data/raw/fred/
+.venv-ml/
+
+# Large reproducible outputs (> GitHub's 100 MB file limit); rebuild with the pipelines
+data/processed/reddit_posts_raw.parquet
+data/processed/documents_clean.parquet
+data/processed/documents_scored.parquet
+data/processed/features_intraday.parquet

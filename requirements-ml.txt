@@ -1,0 +1,9 @@
+# Transformer scoring environment (.venv-ml) — see README "Transformer models".
+# Pinned for Intel macOS: torch 2.2.2 is the last x86_64 macOS build and needs
+# Python <= 3.12 and NumPy 1.x (so pyarrow < 18 and pandas 2.2).
+torch==2.2.2
+numpy<2
+transformers>=4.40,<4.46
+pandas>=2.2,<2.3
+pyarrow>=14,<18
+PyYAML>=6.0
