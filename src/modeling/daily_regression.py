@@ -10,6 +10,7 @@ Specs
   news_vs_reddit 2025–: adds Reddit factors; Wald test of the Reddit block = incremental power
   placebo_lead   news yield-direction at t+1 predicting Δ10y at t (should be ~0; flags leakage)
   event_interact 2025–: news factors × scheduled-event-day dummy (does text matter more on release days?)
+  reddit_lags    2025–: Reddit tone at t-1, t, t+1 (lead = placebo; a real effect should load on t, not t+1)
   oos_*          rolling 250-day OLS, one-step-ahead (2025–): OOS R² of controls+sentiment vs controls-only
 Holm-adjusted p-values (`p_holm`) are added across all sentiment coefficients within each control set.
 Each runs with and without the Δ2y control (Δ2y absorbs most policy-driven variation).
@@ -57,6 +58,8 @@ def build_panel() -> pd.DataFrame:
         mu, sd = df.loc[has, c].mean(), df.loc[has, c].std()
         df[c] = ((df[c] - mu) / sd).where(has, 0.0)
     df["news_ydir_lead1"] = df["news_ydir_wmean"].shift(-1)
+    df["reddit_sent_lag1"] = df["reddit_sent_wmean"].shift(1)
+    df["reddit_sent_lead1"] = df["reddit_sent_wmean"].shift(-1)
     return df
 
 
@@ -107,6 +110,7 @@ def main() -> None:
         rows += fit(recent, "d10y_bp", NEWS + ctrl, label, "news_2025+")
         rows += fit(recent, "d10y_bp", NEWS + REDDIT + ctrl, label, "news_vs_reddit_2025+", wald=REDDIT)
         rows += fit(recent, "d10y_bp", NEWS + [f"{c}_x_event" for c in NEWS] + ctrl, label, "event_interact")
+        rows += fit(recent, "d10y_bp", ["reddit_sent_lag1", "reddit_sent_wmean", "reddit_sent_lead1"] + ctrl, label, "reddit_lags_2025+")
         rows += oos(df, ctrl, label)
     res = pd.DataFrame(rows)
     res["p_holm"] = np.nan
