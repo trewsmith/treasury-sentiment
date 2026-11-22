@@ -1,6 +1,6 @@
 # Data Quality Report — documents_clean.parquet
 
-- **Generated:** 2026-10-29 04:04 UTC by `src/cleaning/pipeline.py`
+- **Generated:** 2026-11-22 02:44 UTC by `src/cleaning/pipeline.py`
 - **Inputs:** `data/processed/news_raw.parquet`, `data/processed/reddit_posts_raw.parquet`
 - **Output:** `data/processed/documents_clean.parquet`
 - **Config:** `configs/cleaning.yaml`
@@ -9,64 +9,63 @@
 
 | source_type | raw rows | clean docs | kept |
 |---|---|---|---|
-| news | 8,459 | 8,208 | 97.0% |
-| reddit | 348,625 | 150,087 | 43.1% |
-| **total** | 357,084 | 158,295 | 44.3% |
+| news | 7,675 | 7,435 | 96.9% |
+| reddit | 359,502 | 156,206 | 43.5% |
+| **total** | 367,177 | 163,641 | 44.6% |
 
 ## Cleaning funnel (rows dropped per step, in order)
 
 | step | news dropped | reddit dropped | news remaining | reddit remaining |
 |---|---|---|---|---|
-| reddit: removed / deleted post | 0 | 182,806 | 8,459 | 165,819 |
-| reddit: stickied (pinned) post | 0 | 324 | 8,459 | 165,495 |
-| reddit: moderator/admin post | 0 | 109 | 8,459 | 165,386 |
-| reddit: bot author | 0 | 1,232 | 8,459 | 164,154 |
-| reddit: megathread / recurring thread | 0 | 881 | 8,459 | 163,273 |
-| missing / unparseable timestamp | 112 | 0 | 8,347 | 163,273 |
-| empty text | 0 | 9 | 8,347 | 163,264 |
-| short text (news < 3, reddit < 5 words) | 107 | 9,999 | 8,240 | 153,265 |
-| non-English | 1 | 166 | 8,239 | 153,099 |
-| dedup: exact doc_id | 0 | 0 | 8,239 | 153,099 |
-| dedup: same text within 24h (hash) | 31 | 3,012 | 8,208 | 150,087 |
+| reddit: removed / deleted post | 0 | 186,321 | 7,675 | 173,181 |
+| reddit: stickied (pinned) post | 0 | 325 | 7,675 | 172,856 |
+| reddit: moderator/admin post | 0 | 130 | 7,675 | 172,726 |
+| reddit: bot author | 0 | 1,282 | 7,675 | 171,444 |
+| reddit: megathread / recurring thread | 0 | 901 | 7,675 | 170,543 |
+| missing / unparseable timestamp | 100 | 0 | 7,575 | 170,543 |
+| empty text | 0 | 9 | 7,575 | 170,534 |
+| short text (news < 3, reddit < 5 words) | 110 | 11,016 | 7,465 | 159,518 |
+| non-English | 1 | 178 | 7,464 | 159,340 |
+| dedup: exact doc_id | 0 | 0 | 7,464 | 159,340 |
+| dedup: same text within 24h (hash) | 29 | 3,134 | 7,435 | 156,206 |
 
-Non-English drops by detected language: `de`: 73, `fr`: 31, `es`: 30, `non_latin`: 15, `pt`: 7, `it`: 6, `nl`: 5.
+Non-English drops by detected language: `de`: 76, `es`: 31, `fr`: 31, `non_latin`: 16, `it`: 13, `pt`: 7, `nl`: 5.
 
 ## Clean documents by source
 
 | source_type | source_name | docs | with body | median words | first | last |
 |---|---|---|---|---|---|---|
-| news | federal_reserve | 6,135 | 1,800 | 15 | 2006-01-03 | 2026-10-16 |
-| news | google_news | 1,756 | 3 | 12 | 2025-10-17 | 2026-10-16 |
-| news | cnbc | 150 | 114 | 30 | 2026-09-18 | 2026-10-16 |
-| news | marketwatch | 60 | 10 | 12 | 2024-02-27 | 2026-10-16 |
-| news | seeking_alpha | 37 | 0 | 10 | 2026-10-16 | 2026-10-16 |
-| news | investing | 36 | 0 | 10 | 2026-10-15 | 2026-10-16 |
-| news | guardian | 34 | 34 | 118 | 2014-08-14 | 2026-10-16 |
-| reddit | r/wallstreetbets | 83,670 | 61,865 | 24 | 2025-01-01 | 2026-10-29 |
-| reddit | r/stocks | 22,211 | 22,193 | 125 | 2025-01-01 | 2026-10-29 |
-| reddit | r/investing | 22,132 | 22,104 | 114 | 2025-01-01 | 2026-10-28 |
-| reddit | r/economics | 18,395 | 0 | 12 | 2025-01-01 | 2026-10-29 |
-| reddit | r/bonds | 3,151 | 2,676 | 64 | 2025-01-01 | 2026-10-28 |
-| reddit | r/securityanalysis | 528 | 173 | 10 | 2025-01-01 | 2026-10-28 |
+| news | federal_reserve | 6,155 | 1,799 | 15 | 2006-01-03 | 2026-11-20 |
+| news | google_news | 962 | 2 | 11 | 2025-11-24 | 2026-11-22 |
+| news | cnbc | 147 | 114 | 31 | 2026-10-16 | 2026-11-21 |
+| news | marketwatch | 60 | 10 | 12 | 2024-02-27 | 2026-11-22 |
+| news | guardian | 37 | 37 | 117 | 2014-08-14 | 2026-11-21 |
+| news | investing | 37 | 0 | 10 | 2026-11-20 | 2026-11-22 |
+| news | seeking_alpha | 37 | 0 | 11 | 2026-11-21 | 2026-11-22 |
+| reddit | r/wallstreetbets | 88,300 | 64,749 | 23 | 2025-01-01 | 2026-11-22 |
+| reddit | r/stocks | 22,846 | 22,827 | 126 | 2025-01-01 | 2026-11-22 |
+| reddit | r/investing | 22,476 | 22,445 | 114 | 2025-01-01 | 2026-11-21 |
+| reddit | r/economics | 18,788 | 0 | 12 | 2025-01-01 | 2026-11-22 |
+| reddit | r/bonds | 3,253 | 2,767 | 64 | 2025-01-01 | 2026-11-22 |
+| reddit | r/securityanalysis | 543 | 178 | 10 | 2025-01-01 | 2026-11-18 |
 
 ## Text length (words)
 
 | source_type | p10 | median | p90 | p99 | share with body |
 |---|---|---|---|---|---|
-| news | 7 | 14 | 1677 | 5243 | 23.9% |
-| reddit | 8 | 43 | 235 | 824 | 72.6% |
+| news | 7 | 14 | 1966 | 5357 | 26.4% |
+| reddit | 8 | 41 | 234 | 822 | 72.3% |
 
 ## Time coverage
 
-- **news:** 2006-01-03 05:00 → 2026-10-16 20:35 UTC
-- **reddit:** 2025-01-01 00:08 → 2026-10-29 03:48 UTC
-- **Overlap (both sources present):** 2025-01-01 → 2026-10-16 — news 2,504 docs, reddit 148,540 docs
+- **news:** 2006-01-03 05:00 → 2026-11-22 01:58 UTC
+- **reddit:** 2025-01-01 00:08 → 2026-11-22 02:33 UTC
+- **Overlap (both sources present):** 2025-01-01 → 2026-11-22 — news 1,734 docs, reddit 156,199 docs
 
 Documents per month (last 24 months, ET):
 
 | month | news | reddit |
 |---|---|---|
-| 2024-11 | 25 | 0 |
 | 2024-12 | 20 | 57 |
 | 2025-01 | 15 | 8,793 |
 | 2025-02 | 28 | 8,176 |
@@ -77,34 +76,35 @@ Documents per month (last 24 months, ET):
 | 2025-07 | 19 | 9,333 |
 | 2025-08 | 17 | 7,090 |
 | 2025-09 | 19 | 6,794 |
-| 2025-10 | 65 | 8,840 |
-| 2025-11 | 50 | 5,626 |
-| 2025-12 | 65 | 5,309 |
-| 2026-01 | 65 | 6,622 |
-| 2026-02 | 65 | 5,145 |
-| 2026-03 | 85 | 5,148 |
-| 2026-04 | 86 | 5,377 |
-| 2026-05 | 106 | 6,697 |
-| 2026-06 | 110 | 7,963 |
-| 2026-07 | 173 | 4,738 |
-| 2026-08 | 274 | 4,046 |
-| 2026-09 | 595 | 3,695 |
-| 2026-10 | 573 | 3,459 |
+| 2025-10 | 31 | 8,840 |
+| 2025-11 | 30 | 5,626 |
+| 2025-12 | 35 | 5,309 |
+| 2026-01 | 46 | 6,622 |
+| 2026-02 | 39 | 5,145 |
+| 2026-03 | 55 | 5,148 |
+| 2026-04 | 37 | 5,377 |
+| 2026-05 | 69 | 6,697 |
+| 2026-06 | 47 | 7,963 |
+| 2026-07 | 65 | 4,738 |
+| 2026-08 | 94 | 4,046 |
+| 2026-09 | 205 | 3,695 |
+| 2026-10 | 190 | 4,116 |
+| 2026-11 | 599 | 5,462 |
 
 ## Timestamp quality and alignment
 
 - **Date-only timestamps:** 689 docs (news items stamped 00:00 ET with no time of day). Use them only for daily analysis; exclude from intraday windows.
-- **yield_date null:** 2,109 docs (after the last available yield observation in market_daily.csv).
+- **yield_date null:** 6,620 docs (after the last available yield observation in market_daily.csv).
 
 Market session (ET; `regular` = 09:30–16:00 weekdays, holidays not excluded):
 
 | market_session | news | reddit |
 |---|---|---|
 | date_only | 689 | 0 |
-| post | 959 | 40,929 |
-| pre | 1,988 | 29,736 |
-| regular | 4,405 | 53,768 |
-| weekend | 167 | 25,654 |
+| post | 970 | 42,826 |
+| pre | 1,190 | 30,996 |
+| regular | 4,349 | 55,769 |
+| weekend | 237 | 26,615 |
 
 ## Examples of dropped rows (for auditing filters)
 
@@ -166,16 +166,17 @@ Market session (ET; `regular` = 09:30–16:00 weekdays, holidays not excluded):
 **missing / unparseable timestamp**
 
 - 
-- I Bonds could approach 5%. Should you wait until November to buy?
-- US Posts $1.99 Trillion Budget Gap for 2026 on Spending Rise
-- Old Navy returns to State Street in space slashed in half from 2023 lease
-- US annual budget gap hits nearly $2 trillion, largest in 5 years
-- The Government Killed Unlimited Grad School Loans. Will Tuition Finally Drop?
-- Dark Matter Tech appoints new CFO in leadership shuffle
-- The US federal budget deficit for 2026 just came in. It's $1.992 trillion.
+- Goldman Sachs admits the ‘AI unwind’ has spiraled into something more dangerous — and it’s watching for 3 signs of botto
+- Abracadabra: Serhant makes Chicago office appear
+- Only 18% of Gen Z workers want to build AI skills. A Wharton professor says using AI is riskier for them
+- JG Wentworth Review 2026: Is its debt relief program worth it?
+- The $120,500 cost of being ‘Sister’: SNL sketch puts a face on America’s caregiving crisis
+- "Psychologically, it is a mountain to climb." How AI fixes the fear of fundraising.
+- Fraudsters Used Fake Crypto Exchanges to Steal $37 Million, SEC Alleges
 
 **short text (news < 3, reddit < 5 words)**
 
+- Banking supervision
 - Risk retention
 - Derivatives regulation
 - Community banking
@@ -183,7 +184,6 @@ Market session (ET; `regular` = 09:30–16:00 weekdays, holidays not excluded):
 - Confirmation hearing
 - Regulatory reform
 - Bank supervision
-- Regulatory restructuring
 
 **non-English**
 
@@ -198,14 +198,14 @@ Market session (ET; `regular` = 09:30–16:00 weekdays, holidays not excluded):
 
 **dedup: same text within 24h (hash)**
 
-- Oil jump sends 30-year yields to two-decade high
-- Wall Street rises as tech stocks climb and oil prices, bond yields hold relatively steady
+- Fed holds rates steady despite concerns over inflation
 - Auction result of Treasury Bonds - RIKB 38 0215 - RIKS 29 0917
-- Global bond sell-off deepens, sending borrowing costs higher around the world
-- Federal Reserve is expected to raise its benchmark rate, defying Trump’s demands
-- Bond Market Sell-Off: Is It Really Safe to Invest Right Now?
-- US Dollar Price Forecast: Treasury Yields Lift DXY as EUR/USD and GBP/USD Retreat
-- Treasury Bond Auction Announcement - RIKB 29 0416 - RIKB 38 0215 - Switch Auction or Cash payment
+- Here are five key takeaways from the Fed rate decision and Warsh news conference
+- The Nasdaq Is in a Correction and Traders Are Pricing in a December Fed Funds Rate Hike. 3 AI Infrastructure Stocks Down
+- Bond selloff deepens as oil prices and public debt fears jolt markets
+- Treasuries Eye Longest Rally in Five Months on Haven Demand
+- Wall Street Braces for Biggest Treasury Sales Overhaul in Years
+- US 10-year Treasury yield slips below 5% as global equity rout deepens -
 
 ## Cleaning rules
 
