@@ -29,7 +29,7 @@ Run from the project root with the virtualenv active (`pip install -r requiremen
 | Classifier eval vs hand labels | `PYTHONPATH=. python src/evaluation/yield_direction_eval.py` | `reports/tables/yield_direction_eval.csv` |
 
 Each output has a Markdown data dictionary next to it. Configs live in `configs/`
-(`fred.yaml`, `news.yaml`, `reddit.yaml`, `cleaning.yaml`).
+(`fred`, `news`, `reddit`, `cleaning`, `events`, `intraday`, `features`, `taxonomy` `.yaml`).
 
 - **Reddit** uses the Arctic Shift archive (no credentials needed). Pulls are cached per
   subreddit-month in `data/raw/reddit/arctic_shift/`, so re-runs only fetch the current month.

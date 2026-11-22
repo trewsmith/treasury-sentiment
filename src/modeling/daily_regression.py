@@ -9,6 +9,9 @@ Specs
   news_only      2006–: news tone + news yield-direction
   news_vs_reddit 2025–: adds Reddit factors; Wald test of the Reddit block = incremental power
   placebo_lead   news yield-direction at t+1 predicting Δ10y at t (should be ~0; flags leakage)
+  event_interact 2025–: news factors × scheduled-event-day dummy (does text matter more on release days?)
+  oos_*          rolling 250-day OLS, one-step-ahead (2025–): OOS R² of controls+sentiment vs controls-only
+Holm-adjusted p-values (`p_holm`) are added across all sentiment coefficients within each control set.
 Each runs with and without the Δ2y control (Δ2y absorbs most policy-driven variation).
 
 Usage: PYTHONPATH=. python src/modeling/daily_regression.py
@@ -19,6 +22,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from statsmodels.stats.multitest import multipletests
 
 from src.utils.paths import MARKET_DAILY_PATH, PROCESSED_DIR, PROJECT_ROOT
 
@@ -72,8 +76,29 @@ def fit(df, y, xs, label, spec, wald=None):
     return out
 
 
+def oos(df, ctrl, label, window=250):
+    """Rolling one-step OOS fit: controls+news vs controls-only. Returns summary rows."""
+    d = df[["d10y_bp", *NEWS, *ctrl]].dropna()
+    start = d.index.searchsorted(pd.Timestamp("2025-01-01"))
+    preds = {"base": [], "full": [], "y": []}
+    for i in range(max(start, window), len(d)):
+        tr, te = d.iloc[i - window : i], d.iloc[[i]]
+        for k, xs in (("base", ctrl), ("full", NEWS + ctrl)):
+            m = sm.OLS(tr["d10y_bp"], sm.add_constant(tr[xs])).fit()
+            preds[k].append(float(m.predict(sm.add_constant(te[xs], has_constant="add")).iloc[0]))
+        preds["y"].append(float(te["d10y_bp"].iloc[0]))
+    y, b, f = (np.array(preds[k]) for k in ("y", "base", "full"))
+    sse = lambda e: float(((y - e) ** 2).sum())
+    return [dict(spec="oos_rolling250", controls=label, var="OOS_R2_full_vs_base", coef_bp_per_sd=1 - sse(f) / sse(b),
+                 n=len(y)),
+            dict(spec="oos_rolling250", controls=label, var="dir_acc_base", coef_bp_per_sd=float((np.sign(b) == np.sign(y)).mean()), n=len(y)),
+            dict(spec="oos_rolling250", controls=label, var="dir_acc_full", coef_bp_per_sd=float((np.sign(f) == np.sign(y)).mean()), n=len(y))]
+
+
 def main() -> None:
     df = build_panel()
+    for c in NEWS:
+        df[f"{c}_x_event"] = df[c] * df["event_day"]
     rows = []
     for label, ctrl in (("no_2y", [c for c in CONTROLS if c != "d2y_bp"]), ("with_2y", CONTROLS)):
         rows += fit(df, "d10y_bp", NEWS + ctrl, label, "news_only")
@@ -81,7 +106,12 @@ def main() -> None:
         recent = df.loc["2025-01-01":]
         rows += fit(recent, "d10y_bp", NEWS + ctrl, label, "news_2025+")
         rows += fit(recent, "d10y_bp", NEWS + REDDIT + ctrl, label, "news_vs_reddit_2025+", wald=REDDIT)
+        rows += fit(recent, "d10y_bp", NEWS + [f"{c}_x_event" for c in NEWS] + ctrl, label, "event_interact")
+        rows += oos(df, ctrl, label)
     res = pd.DataFrame(rows)
+    res["p_holm"] = np.nan
+    for label, g in res[res["var"].str.contains("sent|ydir", regex=True) & ~res["var"].str.startswith("WALD") & res.p.notna()].groupby("controls"):
+        res.loc[g.index, "p_holm"] = multipletests(g.p, method="holm")[1]
     out = PROJECT_ROOT / "reports" / "tables" / "daily_regression.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     res.to_csv(out, index=False)
