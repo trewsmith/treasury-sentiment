@@ -1,0 +1,63 @@
+# Cleaning + time alignment config → data/processed/documents_clean.parquet
+# Inputs: data/processed/news_raw.parquet, data/processed/reddit_posts_raw.parquet
+
+# Optional sample window on timestamp_utc (null = keep everything)
+start_date: null
+end_date: null
+
+# Documents with fewer words than this (headline + body, after cleaning) are dropped.
+# News headlines are dense ("PCE Inflation Remains Elevated"), Reddit titles are not.
+min_words:
+  news: 3
+  reddit: 5
+
+language:
+  min_latin_share: 0.6   # below this share of Latin letters → non-English script
+  min_foreign_hits: 3    # foreign stopword hits needed (and > 2x English hits) to call non-English
+
+dedup:
+  # Exact-text duplicates (normalized hash) within the same source_type are
+  # dropped if they appear within this many hours of the previous copy.
+  # A window (not all-time) keeps recurring headlines such as
+  # "Federal Reserve issues FOMC statement" across meetings.
+  window_hours: 24
+
+reddit:
+  # removed_by_category values to drop (null = not removed, always kept)
+  drop_removed_categories:
+    - moderator
+    - automod_filtered
+    - reddit
+    - deleted
+    - author
+    - anti_evil_ops
+    - copyright_takedown
+    - content_takedown
+    - community_ops
+  drop_stickied: true
+  drop_distinguished: true      # moderator / admin posts
+  drop_over_18: false
+  bot_authors:
+    - AutoModerator
+    - VisualMod
+    - QualityVote
+  # Case-insensitive regexes on the title → recurring megathreads / meta posts
+  megathread_title_patterns:
+    - '\bdaily (?:general )?discussion\b'
+    - '\bweekend discussion\b'
+    - '\bmega ?thread\b'
+    - '\bwhat are your moves tomorrow\b'
+    - '\bdaily (?:advice|advise|investing|stock|options) thread\b'
+    - '\b(?:daily|weekly) (?:discussion|thread)\b'
+    - '\bweekly earnings (?:thread|discussion)\b'
+    - '\bmost anticipated earnings releases\b'
+
+time_alignment:
+  timezone: "America/New_York"
+  # U.S. equity session used for market_session labels (holidays not excluded)
+  session_open: "09:30"
+  session_close: "16:00"
+  # H.15 / Treasury CMT yields are set from ~3:30 p.m. ET bid quotes, so a
+  # document after this time can first move the NEXT daily DGS10 observation.
+  yield_cutoff: "15:30"
+  yield_series: "DGS10"
