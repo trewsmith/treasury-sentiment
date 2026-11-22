@@ -1,0 +1,238 @@
+# Finance-aware taxonomy for Treasury Sentiment
+#
+# Two rule layers, both case-insensitive Python regexes matched against
+# documents_clean.text:
+#   topics          — week 11 macro topic tags (multi-label)
+#   yield_direction — week 10 yield-direction cues (what the text implies for
+#                     the 10y yield, NOT whether its tone is positive/negative)
+#
+# Keep patterns specific: every pattern is matched against ~400k docs,
+# including noisy Reddit text. Use \b word boundaries.
+
+topics:
+  inflation:
+    description: "Prices, CPI/PCE, inflation expectations, wages as a price driver"
+    patterns:
+      - '\binflation(?:ary)?\b'
+      - '\bdisinflation\b'
+      - '\bdeflation(?:ary)?\b'
+      - '\b(?:core )?(?:cpi|pce|ppi)\b'
+      - '\bconsumer price(?:s| index)\b'
+      - '\bproducer price(?:s| index)\b'
+      - '\bprice pressures?\b'
+      - '\bbreakevens?\b'
+      - '\btips\b(?= (?:yields?|breakeven|spread))'
+      - '\bcost of living\b'
+  fed:
+    description: "Federal Reserve, FOMC, policy rate, balance sheet, Fed officials"
+    patterns:
+      - '\bfed\b'
+      - '\bfederal reserve\b'
+      - '\bfomc\b'
+      - '\bpowell\b'
+      - '\bwarsh\b'
+      - '\b(?:waller|bowman|jefferson|barr|cook|kugler|miran|goolsbee|logan|kashkari|daly|bostic|williams|hammack|musalem|schmid|harker|collins)\b(?= (?:said|says|speech|remarks|sees|warns|expects))'
+      - '\bfed funds\b'
+      - '\b(?:rate|rates) (?:hike|hikes|cut|cuts|decision|path|outlook)\b'
+      - '\b(?:hike|cut|raise|lower|hold)s? (?:interest )?rates\b'
+      - '\bmonetary policy\b'
+      - '\bquantitative (?:easing|tightening)\b'
+      - '\b(?:qe|qt)\b'
+      - '\bbalance sheet runoff\b'
+      - '\bdot plot\b'
+      - '\bbasis points?\b|\b\d+ ?bps?\b'
+      - '\bhawkish\b|\bdovish\b'
+  labor:
+    description: "Jobs, payrolls, unemployment, claims, wages"
+    patterns:
+      - '\bjobs? (?:report|data|numbers?|growth|market)\b'
+      - '\b(?:non-?farm )?payrolls?\b'
+      - '\bnfp\b'
+      - '\bunemployment\b'
+      - '\bjobless (?:claims|rate)\b'
+      - '\blabor market\b|\blabour market\b'
+      - '\blayoffs?\b'
+      - '\bhiring\b'
+      - '\bwage growth\b|\bwages\b'
+      - '\bjolts\b|\bjob openings\b'
+      - '\bemployment (?:report|cost index|situation)\b'
+  growth:
+    description: "GDP, recession risk, slowdown, activity data, consumer demand"
+    patterns:
+      - '\brecession(?:ary|s)?\b'
+      - '\bgdp\b'
+      - '\beconomic (?:growth|slowdown|activity|outlook|data)\b'
+      - '\bslowdown\b'
+      - '\b(?:soft|hard) landing\b'
+      - '\bcontraction\b'
+      - '\bretail sales\b'
+      - '\bconsumer (?:spending|confidence|sentiment)\b'
+      - '\b(?:ism|pmi)\b'
+      - '\bmanufacturing (?:index|activity|survey)\b'
+      - '\bstagflation\b'
+      - '\bindustrial production\b'
+  geopolitics:
+    description: "War, sanctions, tariffs/trade conflict, elections, geopolitical shocks"
+    patterns:
+      - '\bwar\b'
+      - '\b(?:missile|military|troops|invasion|airstrikes?|ceasefire)\b'
+      - '\bsanctions?\b'
+      - '\btariffs?\b'
+      - '\btrade (?:war|deal|tensions?|talks|dispute)\b'
+      - '\bgeopolitic(?:s|al)\b'
+      - '\b(?:ukraine|russia|china|taiwan|iran|israel|gaza|middle east|north korea)\b'
+      - '\bopec\b'
+      - '\belection\b'
+  fiscal:
+    description: "Deficits, debt, Treasury issuance/auctions, debt ceiling, ratings, budget"
+    patterns:
+      - '\bdeficits?\b'
+      - '\bnational debt\b|\bfederal debt\b|\bpublic debt\b'
+      - '\bdebt (?:ceiling|limit)\b'
+      - '\btreasury (?:auction|issuance|refunding|supply|bill|bills|department|secretary)\b'
+      - '\b(?:\d+-year|\d+ year|bond|note|bill) auction\b'
+      - '\bauctions?\b(?= .{0,30}\b(?:treasur|notes?|bonds?|bills?)\b)'
+      - '\bissuance\b'
+      - '\bquarterly refunding\b'
+      - '\bbudget (?:bill|deal|deficit|reconciliation)\b'
+      - '\b(?:government )?shutdown\b'
+      - '\bcredit rating\b|\bdowngrade[sd]?\b'
+      - '\bterm premium\b'
+      - '\bbessent\b|\byellen\b'
+      - '\bspending bill\b|\btax cuts?\b'
+  risk_sentiment:
+    description: "Equity selloffs/rallies, volatility, risk-on/off, flight to safety"
+    patterns:
+      - '\b(?:stock|stocks|equity|equities|market) (?:crash|crashes|plunge|plunges|selloff|sell-off|rout|meltdown|correction|rally|rallies|surge|surges)\b'
+      - '\b(?:s&p|s&p 500|dow|nasdaq|spx|spy|qqq)\b'
+      - '\bvix\b|\bvolatility\b'
+      - '\brisk[- ](?:on|off)\b'
+      - '\bflight to (?:safety|quality)\b'
+      - '\bsafe[- ]havens?\b'
+      - '\bpanic\b|\bcapitulation\b'
+      - '\bbear market\b|\bbull market\b'
+  banking_credit:
+    description: "Bank stress, credit spreads, defaults, private credit, liquidity"
+    patterns:
+      - '\bbank (?:failure|failures|run|runs|collapse|stress|crisis)\b'
+      - '\bbanking (?:crisis|stress|turmoil|sector)\b'
+      - '\bregional banks?\b'
+      - '\bcredit (?:spreads?|crunch|stress|risk|markets?|crisis)\b'
+      - '\bhigh[- ]yield\b|\bjunk bonds?\b'
+      - '\bdefaults?\b'
+      - '\bprivate credit\b'
+      - '\bliquidity (?:crisis|crunch|stress|facility)\b'
+      - '\b(?:svb|silicon valley bank|first republic|credit suisse)\b'
+      - '\bcommercial real estate\b|\bcre\b'
+      - '\bstress test\b'
+
+# Yield-direction cues. Each category has a direction (+1 = pushes 10y yields
+# UP, -1 = pushes yields DOWN). Rule score = sum(direction × matches).
+# `market_move` categories describe the yield move itself (reported moves);
+# they are the most reliable cues but are partly contemporaneous.
+yield_direction:
+  hawkish:
+    direction: 1
+    description: "Tighter policy expected: hikes, fewer/no cuts, QT, hawkish Fed talk"
+    patterns:
+      - '\bhawkish\b'
+      - '(?<!pause )(?<!pauses )(?<!paused )(?<!end )(?<!ends )(?<!halt )(?<!halts )(?<!no )(?<!more )\brate hikes?\b|\bhike (?:interest )?rates\b|\braises? (?:interest )?rates\b'
+      - '\b(?:fewer|no|delay(?:s|ed)?|pare[sd]?|scale[sd]? back) (?:rate )?cuts\b'
+      - '\brule[sd]? out (?:a |any )?(?:rate )?cuts?\b'
+      - '\bhigher for longer\b'
+      - '\b(?:monetary )?tightening\b'
+      - '\bquantitative tightening\b|\bqt\b'
+      - '\bbalance sheet runoff\b'
+  inflationary:
+    direction: 1
+    description: "Inflation running hot or re-accelerating; price pressure from oil, tariffs, wages"
+    patterns:
+      - '\b(?:inflation|cpi|pce|ppi|consumer prices|producer prices)\b[^.;!?]{0,40}?\b(?:hot|hotter|accelerat\w*|surg\w*|jump\w*|spik\w*|soar\w*|sticky|stubborn|re-?accelerat\w*|higher than expected|above expectations|beats? (?:estimates|expectations))\b'
+      - '\b(?:hot|hotter[- ]than[- ]expected|sticky|stubborn|persistent|rising|soaring|surging)\b (?:core )?(?:inflation|cpi|pce|ppi|prices)\b'
+      - '\binflation (?:fears?|worries|concerns?|risks?|scare)\b'
+      - '\b(?:inflation|cpi|pce|ppi|consumer prices|producer prices)\b[^.;!?]{0,25}?\b(?:increas\w*|ris(?:es|ing|en)|rose|climb\w*|heat\w* up|pick\w* up)\b'
+      - '\b(?:oil|crude|gas|energy) prices?\b.{0,20}\b(?:surg\w*|jump\w*|soar\w*|spik\w*|rall\w*)\b'
+      - '\btariffs?\b.{0,40}\b(?:raise|boost|push)\w* (?:up )?(?:prices|inflation)\b'
+      - '\bwage (?:growth|pressures?)\b.{0,20}\b(?:strong|accelerat\w*|hot|jump\w*)\b'
+  growth_hot:
+    direction: 1
+    description: "Strong activity / labor data, resilient economy, no recession"
+    patterns:
+      - '\b(?:strong|robust|blowout|hot|solid|better[- ]than[- ]expected)\b (?:jobs?|payrolls?|hiring|gdp|growth|retail sales|consumer spending|economic data|data)\b'
+      - '\b(?:payrolls?|jobs?|gdp|retail sales)\b.{0,30}\b(?:beat\w*|surg\w*|jump\w*|top\w* (?:estimates|expectations)|blow past)\b'
+      - '\bunemployment (?:rate )?(?:falls?|fell|drops?|dropped|declines?|declined)\b'
+      - '\b(?:economy|economic growth)\b.{0,20}\b(?:resilient|booming|strong|accelerat\w*|overheat\w*)\b'
+      - '\b(?:no|avoid\w*|skip\w*) (?:a )?recession\b'
+      - '\bsoft landing\b'
+      - '\bgdp ?now\b[^.;!?]{0,30}?(?:\+|\bat )[3-9](?:\.\d+)?%'
+  fiscal_supply:
+    direction: 1
+    description: "More Treasury supply / fiscal risk: wider deficits, bigger auctions, weak demand, downgrades"
+    patterns:
+      - '\bdeficits?\b.{0,30}\b(?:widen\w*|balloon\w*|surg\w*|soar\w*|swell\w*|record|explod\w*)\b'
+      - '\b(?:bigger|larger|record|increas\w*|more) (?:treasury |bond |debt )?(?:auction sizes?|auctions|issuance|supply)\b'
+      - '\b(?:weak|poor|sloppy|soft|tepid)\b (?:demand|auction)\b|\bauction tail\w*\b|\btailed\b'
+      - '\bterm premium\b.{0,20}\b(?:ris\w*|climb\w*|jump\w*|widen\w*)\b'
+      - '\bbond vigilantes?\b'
+      - '\b(?:credit )?(?:rating )?downgrade[sd]?\b.{0,40}\b(?:u\.?s\.?|united states|treasur\w*|sovereign)\b|\b(?:u\.?s\.?|united states)\b.{0,30}\bdowngrade[sd]?\b'
+      - '\bfiscal (?:concerns?|worries|fears?|risks?|crisis|blowout)\b'
+  market_up:
+    direction: 1
+    description: "Reported move: yields rising / Treasuries selling off"
+    patterns:
+      - '\byields?\b[^.;!?]{0,25}?\b(?:ris\w*|rose|climb\w*|jump\w*|surg\w*|soar\w*|spik\w*|high\w*|gain\w*|up)\b'
+      - '\b(?:treasur\w*|bonds?|t-?notes?|gilts|bund\w*)\b(?:(?!yield).){0,20}\b(?:sell[- ]?off|sold off|slid\w*|slump\w*|tumbl\w*|fall\w*|fell|drop\w*|los\w*)\b'
+      - '\bbond (?:sell[- ]?off|rout|market rout|slump)\b'
+      - '\b(?:bear )?steepen\w*\b'
+      - '\b(?:mortgage|borrowing) rates?\b[^.;!?]{0,25}?\b(?:ris\w*|rose|climb\w*|jump\w*|surg\w*|soar\w*|spik\w*|up)\b'
+  dovish:
+    direction: -1
+    description: "Easier policy expected: cuts, pauses in hikes, QE, dovish Fed talk"
+    patterns:
+      - '\bdovish\b'
+      - '(?<!fewer )(?<!no )(?<!delay )(?<!delays )(?<!delayed )(?<!pare )(?<!pared )(?<!pares )(?<!out )(?<!any )\brate cuts?\b|\bcuts? (?:interest )?rates\b|\blowers? (?:interest )?rates\b'
+      - '\b(?:monetary )?easing\b'
+      - '\bpivot\b'
+      - '\bquantitative easing\b|\bqe\b'
+      - '\b(?:pause|end|halt)\w* (?:rate )?hikes\b'
+      - '\bjumbo cut\b|\b50 ?(?:bp|bps|basis[- ]point) cut\b'
+  disinflationary:
+    direction: -1
+    description: "Inflation cooling / below expectations; falling commodity prices"
+    patterns:
+      - '\b(?:inflation|cpi|pce|ppi|consumer prices|producer prices)\b[^.;!?]{0,40}?\b(?:cool\w*|eas\w*|slow\w*|soft\w*|fell|fall\w*|declin\w*|lower than expected|below expectations|miss\w*)\b'
+      - '\b(?:cooling|easing|slowing|softer|falling|moderating)\b (?:core )?(?:inflation|cpi|pce|ppi)\b'
+      - '\bdisinflation\w*\b|\bdeflation\w*\b'
+      - '\b(?:oil|crude|gas|energy) prices?\b.{0,20}\b(?:plung\w*|tumbl\w*|slump\w*|fall\w*|fell|drop\w*|sink\w*|crash\w*)\b'
+  recession_risk:
+    direction: -1
+    description: "Weak activity / labor data, recession or slowdown fears"
+    patterns:
+      - '\brecession (?:fears?|risks?|worries|odds|warning|signals?|looms?|indicator)\b'
+      - '\b(?:into|enter\w*|heading for|toward|towards) (?:a )?recession\b'
+      - '\b(?:weak|weaker|disappointing|soft|softer|worse[- ]than[- ]expected)\b (?:jobs?|payrolls?|hiring|gdp|growth|retail sales|consumer spending|economic data|data)\b'
+      - '\b(?:payrolls?|jobs?|gdp|retail sales)\b.{0,30}\b(?:miss\w*|shrink\w*|shrank|contract\w*|slump\w*|plung\w*)\b'
+      - '\bunemployment (?:rate )?(?:rises?|rose|jumps?|jumped|climbs?|climbed|spikes?)\b'
+      - '\bjobless claims\b.{0,20}\b(?:ris\w*|rose|jump\w*|surg\w*|climb\w*)\b'
+      - '\b(?:mass )?layoffs\b'
+      - '\b(?:economic )?slowdown\b|\bhard landing\b|\bstagnat\w*\b'
+      - '\binverted yield curve\b|\byield curve inver\w*\b'
+  risk_off:
+    direction: -1
+    description: "Flight to safety: equity crashes, panic, crises, geopolitical shocks"
+    patterns:
+      - '\bflight to (?:safety|quality)\b'
+      - '\bsafe[- ]havens?\b'
+      - '\brisk[- ]off\b'
+      - '\b(?:stocks?|equit\w*|markets?|s&p|nasdaq|dow)\b.{0,20}\b(?:crash\w*|plung\w*|tumbl\w*|rout\w*|sell[- ]?off|meltdown|tank\w*)\b'
+      - '\b(?:bank\w*|banking|credit|financial) (?:crisis|turmoil|panic|contagion|collapse)\b'
+      - '\bvix\b.{0,20}\b(?:spik\w*|surg\w*|jump\w*|soar\w*)\b'
+  market_down:
+    direction: -1
+    description: "Reported move: yields falling / Treasuries rallying"
+    patterns:
+      - '\byields?\b[^.;!?]{0,25}?\b(?:fall\w*|fell|drop\w*|declin\w*|slid\w*|slump\w*|tumbl\w*|sink\w*|sank|plung\w*|retreat\w*|eas\w*|low\w*|down)\b'
+      - '\b(?:treasur\w*|bonds?|t-?notes?|gilts|bund\w*)\b(?:(?!yield).){0,20}\b(?:rall\w*|gain\w*|advanc\w*|climb\w*|jump\w*|surg\w*)\b'
+      - '\bbond (?:rally|rallies|market rally)\b'
+      - '\bbull steepen\w*\b|\bflatten\w*\b'
+      - '\b(?:mortgage|borrowing) rates?\b[^.;!?]{0,25}?\b(?:fall\w*|fell|drop\w*|declin\w*|slid\w*|tumbl\w*|sink\w*|sank|eas\w*|down)\b'
