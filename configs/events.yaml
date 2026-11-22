@@ -1,0 +1,20 @@
+# Scheduled macro events → data/processed/events_calendar.parquet
+# FRED release dates need FRED_API_KEY; FOMC dates are scraped from federalreserve.gov.
+
+start_year: 2006
+
+# FRED release ids (https://fred.stlouisfed.org/releases) and the usual release time (ET)
+fred_releases:
+  cpi:        {release_id: 10,  name: "Consumer Price Index",             time_et: "08:30", importance: 3}
+  nfp:        {release_id: 50,  name: "Employment Situation",             time_et: "08:30", importance: 3}
+  pce:        {release_id: 54,  name: "Personal Income and Outlays",      time_et: "08:30", importance: 2}
+  gdp:        {release_id: 53,  name: "Gross Domestic Product",           time_et: "08:30", importance: 2}
+  ppi:        {release_id: 46,  name: "Producer Price Index",             time_et: "08:30", importance: 2}
+  retail:     {release_id: 9,   name: "Advance Retail Sales",             time_et: "08:30", importance: 2}
+
+fomc:
+  # Statement time; the Fed moved to 14:00 ET in 2013 (14:15 before, with a few exceptions)
+  time_et: "14:00"
+  time_et_pre_2013: "14:15"
+  importance: 3
+  # Unscheduled meetings and conference calls are kept but flagged is_scheduled = False

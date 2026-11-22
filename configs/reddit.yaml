@@ -1,0 +1,36 @@
+# Reddit ingestion config for Treasury Sentiment
+# First pass: submissions (posts) only — comments are intentionally out of scope.
+#
+# Backends:
+#   arctic_shift — historical archive (Pushshift successor), no credentials needed.
+#                  https://github.com/ArthurHeitmann/arctic_shift/blob/master/api/README.md
+#   praw         — official Reddit API; listings cap at ~1000 newest posts per
+#                  subreddit, so it is only used to top up the most recent days.
+#                  Needs REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET / REDDIT_USER_AGENT in .env.
+
+start_date: "2025-01-01"
+# end_date: null  # defaults to now (UTC)
+
+subreddits:
+  investing:
+    role: "retail_investing"
+  stocks:
+    role: "retail_investing"
+  wallstreetbets:
+    role: "noisy_contrast"  # high volume, ~50-60% of posts mod-removed
+  Economics:
+    role: "macro_discussion"
+  SecurityAnalysis:
+    role: "professional_leaning"  # low volume (~30 posts/month)
+  bonds:
+    role: "rates_focused"  # ~150-300 posts/month
+
+arctic_shift:
+  base_url: "https://arctic-shift.photon-reddit.com/api/posts/search"
+  page_size: 100
+  sleep_seconds: 0.5
+  # Months that ended more than this many days ago are cached and not re-pulled
+  cache_after_days: 3
+
+praw:
+  limit_per_subreddit: 1000

@@ -23,6 +23,10 @@ def fetch_article_body(
         resp.raise_for_status()
     except Exception:
         return None
+    # Without a declared charset requests assumes ISO-8859-1 (e.g. federalreserve.gov
+    # serves UTF-8 as bare text/html), which turns ’ – “ into "â" mojibake.
+    if "charset" not in resp.headers.get("content-type", "").lower():
+        resp.encoding = resp.apparent_encoding or "utf-8"
     text = trafilatura.extract(resp.text, include_comments=False, include_tables=False)
     if text and len(text.strip()) >= 40:
         return text.strip()

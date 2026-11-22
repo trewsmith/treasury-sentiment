@@ -41,3 +41,14 @@ series:
     frequency: "Daily"
     role: "credit_risk"
     # FRED note (Apr 2026+): only ~3 years of observations distributed via API
+  SP500:
+    name: "S&P 500"
+    units: "Index"
+    frequency: "Daily"
+    role: "control"
+    # FRED note: S&P licensing limits the API to ~10 years of history
+  DCOILWTICO:
+    name: "Crude Oil Prices: West Texas Intermediate (WTI)"
+    units: "Dollars per Barrel"
+    frequency: "Daily"
+    role: "control"

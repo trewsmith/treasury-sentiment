@@ -1,0 +1,18 @@
+# Intraday market bars → data/raw/intraday/<alias>.parquet → data/processed/market_intraday.parquet
+#
+# Yahoo Finance only serves ~60 days of 5-minute bars, so it cannot backfill to
+# 2025-01-01. Run the collector regularly to accumulate history, and drop vendor
+# files (Databento, Polygon, ...) into data/raw/intraday/vendor/<alias>.csv to
+# backfill. Rows from every source are merged by timestamp (vendor wins on overlap).
+
+interval: "5m"
+yahoo_range: "60d"
+
+symbols:
+  ust10_fut: {yahoo: "ZN=F",      name: "10-Year T-Note futures (front month)", role: "core_outcome"}
+  tnx:       {yahoo: "^TNX",      name: "CBOE 10-Year yield index (yield x10)", role: "yield_level"}
+  ust2_fut:  {yahoo: "ZT=F",      name: "2-Year T-Note futures",                role: "control"}
+  es_fut:    {yahoo: "ES=F",      name: "E-mini S&P 500 futures",               role: "control"}
+  vix:       {yahoo: "^VIX",      name: "CBOE Volatility Index",                role: "control"}
+  dxy:       {yahoo: "DX-Y.NYB",  name: "US Dollar Index (DXY)",                role: "control"}
+  wti_fut:   {yahoo: "CL=F",      name: "WTI crude futures",                    role: "control"}
