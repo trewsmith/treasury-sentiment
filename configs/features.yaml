@@ -1,0 +1,51 @@
+# Aggregate sentiment factors → features_daily.parquet / features_intraday.parquet
+# Input: data/processed/documents_scored.parquet
+
+# Tone model used for *_sent_* features (FinBERT only covers relevant docs;
+# VADER means over all docs are included separately as a baseline)
+sentiment_model: finbert
+
+# A doc counts toward *_neg_spike when its sentiment_score is at or below this
+negative_spike_threshold: -0.5
+
+# Surprise features: z-score vs trailing window, excluding the current period
+rolling_window: 30        # observations (trading days for daily)
+rolling_min_periods: 10
+
+# Topics that get their own sentiment / yield-direction aggregates
+topic_features: [inflation, fed, growth, labor, fiscal]
+
+# News source-quality weights (by source_name); Google News uses the publisher
+# extracted into meta.publisher. Anything unlisted gets default_weight.
+news_weights:
+  default_weight: 0.5
+  sources:
+    federal_reserve: 1.0
+    cnbc: 0.8
+    marketwatch: 0.8
+    investing: 0.6
+    yahoo_finance: 0.6
+    seeking_alpha: 0.5
+    guardian: 0.6
+  google_news_publishers:
+    Reuters: 1.0
+    Bloomberg: 1.0
+    Bloomberg.com: 1.0
+    WSJ: 1.0
+    The Wall Street Journal: 1.0
+    Financial Times: 1.0
+    CNBC: 0.8
+    MarketWatch: 0.8
+    Barron's: 0.8
+    Morningstar: 0.7
+    Yahoo Finance: 0.6
+    Investopedia: 0.4
+
+# Reddit weight = 1 + log1p(max(score, 0)); scores are ~36h snapshots
+reddit_weighting: log_score
+
+intraday:
+  start_date: "2025-01-01"   # Reddit sample start; news before this is daily-only
+  frequencies: ["5min", "30min"]
+  # Volume-shock z-score uses the trailing 24 hours of buckets
+  shock_lookback: "24h"
