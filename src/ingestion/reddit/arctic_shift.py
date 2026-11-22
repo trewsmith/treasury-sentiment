@@ -46,7 +46,7 @@ def _get_page(
         except requests.RequestException as exc:
             last_err = exc
             continue
-        if resp.status_code == 429 or resp.status_code >= 500:
+        if resp.status_code in (422, 429) or resp.status_code >= 500:  # 422 is intermittent on this API
             last_err = f"HTTP {resp.status_code}"
             reset = resp.headers.get("x-ratelimit-reset")
             if resp.status_code == 429 and reset and reset.isdigit():
