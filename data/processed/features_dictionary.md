@@ -1,7 +1,7 @@
 # Sentiment Feature Dictionary
 
-- **features_daily.parquet:** 5,200 trading days (2006-01-03 → 2026-10-14), 57 columns
-- **features_intraday.parquet:** 223,829 buckets (5min, 30min), 50 columns
+- **features_daily.parquet:** 5,211 trading days (2006-01-03 → 2026-10-29), 57 columns
+- **features_intraday.parquet:** 231,876 buckets (5min, 30min), 50 columns
 - Built by `src/features/pipeline.py` from `documents_scored.parquet`; config `configs/features.yaml`.
 
 ## Keys and timing
