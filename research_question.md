@@ -14,12 +14,12 @@ The study will examine whether different categories of financial information are
 
 ## Information Categories
 
-Rather than relying solely on general positive or negative sentiment, the analysis will classify financial information according to its economic implications, the categories probably being:
+Rather than relying solely on general positive or negative sentiment, the analysis classifies financial information by economic topic and by its implied direction for yields. The five categories tested are:
 
-* Hawkish or dovish
-* Inflationary or disinflationary
-* Growth or recessionary
-* Risk-on or risk-off
+* Inflation
+* Federal Reserve / monetary policy
+* Growth
+* Labor market
 * Fiscal and Treasury supply
 
 ## Empirical Framework

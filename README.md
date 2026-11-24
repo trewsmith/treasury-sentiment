@@ -9,14 +9,21 @@ This research project examines the incorporation of textual financial informatio
 
 ## Scope and primary result
 
-**Lead finding (exploratory).** Same-day Reddit tone (FinBERT, score-weighted) and the daily change in the **2-year**
-Treasury yield, 2025+: +0.90 bp per 1 SD, Holm p < 0.001 within the `reddit_robustness.csv` test family (n = 472,
-no 2-year control). Unweighted: +0.78 (Holm p = 0.003); excluding r/wallstreetbets: +0.81 (Holm p = 0.003).
+**Lead finding (exploratory).** Same-day Reddit tone (FinBERT, unweighted) and the daily change in the **2-year**
+Treasury yield, 2025+: +0.78 bp per 1 SD, Holm p = 0.003 within the `reddit_robustness.csv` test family (n = 472,
+no 2-year control). Unweighted avoids weights built from post scores observed ~36h later. Score-weighted: +0.90
+(Holm p < 0.001); excluding r/wallstreetbets: +0.81 (Holm p = 0.003).
 This outcome was chosen after seeing the results, so it is exploratory, not pre-specified. It is a same-day
 association: it does not show that Reddit causes or predicts yields, and posts may be reacting to yield moves.
 
-**Secondary: 10-year yield.** +0.67 bp in the same table, Holm p = 0.080 (+0.62, Holm p = 0.042 in
-`daily_regression.csv`), and about zero once the 2-year change is controlled for. Not significant after Holm
+**Checks of the lead result** (`lead_result_checks.csv`, post hoc, its own Holm family). Same-day +0.76 to +0.80 with no
+controls, lagged 2-year change, Reddit volume or press controls (Holm p <= 0.010); 2025-11-24+ +1.03 (Holm p = 0.005);
+before that +0.46 (p = 0.110), so it is not established in the earlier half. No lead: next-day -0.20 (p = 0.38). Splitting
+posts by time of day, overnight (before 08:00 ET) +0.52 and session +0.56 are each nominal only (Holm p = 0.73, 0.12), so
+the data cannot say whether posts move before or after the market.
+
+**Secondary: 10-year yield.** Unweighted +0.53 bp, Holm p = 0.41; score-weighted +0.67 bp, Holm p = 0.080 (+0.62, Holm p = 0.042
+in `daily_regression.csv`), and about zero once the 2-year change is controlled for. Not significant after Holm
 correction in the press-covered window (2025-11-24+). No text measure significantly led the 10-year after Holm
 correction in the lead/lag or hourly tests.
 
@@ -55,8 +62,11 @@ Run from the project root with the virtualenv active (`pip install -r requiremen
 | Reddit robustness (daily) | `PYTHONPATH=. python src/modeling/reddit_robustness.py` | `reports/tables/reddit_robustness.csv` |
 | News robustness + news vs. Reddit windows | `PYTHONPATH=. python src/modeling/news_robustness.py` | `reports/tables/news_robustness.csv`, `news_vs_reddit_windows.csv` |
 | Lead/lag timing (daily) | `PYTHONPATH=. python src/modeling/lead_lag.py` | `reports/tables/lead_lag.csv` |
+| Lead-result checks (2-year) | `PYTHONPATH=. python src/modeling/lead_result_checks.py` | `reports/tables/lead_result_checks.csv` |
+| Descriptive tables | `PYTHONPATH=. python src/modeling/descriptives.py` | `reports/tables/desc_*.csv` |
 | Event study (macro releases) | `PYTHONPATH=. python src/modeling/event_study.py` | `reports/tables/event_study.csv` |
 | Classifier eval vs hand labels | `PYTHONPATH=. python src/evaluation/yield_direction_eval.py` | `reports/tables/yield_direction_eval.csv` |
+| Everything after data collection, inputs hashed | `bash scripts/frozen_rerun.sh` | `reports/tables/`, `reports/paper/` |
 | Paper tables + figures (run last) | `PYTHONPATH=. python src/reporting_paper.py` | `reports/paper/` |
 
 Each output has a Markdown data dictionary next to it. Configs live in `configs/`

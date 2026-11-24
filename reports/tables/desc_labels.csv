@@ -1,0 +1,6 @@
+set,down,neutral,up,All
+hand_batch1,8,62,30,100
+hand_batch2,9,84,27,120
+hand_batch3,11,88,21,120
+silver,72,606,172,850
+All,100,840,250,1190

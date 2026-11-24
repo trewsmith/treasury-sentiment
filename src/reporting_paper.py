@@ -23,7 +23,7 @@ t = lambda name: pd.read_csv(TABLES_DIR / f"{name}.csv")
 def forest():
     r = t("reddit_robustness")
     rows = []
-    for m, lab in (("weighted", "Score-weighted"), ("unweighted", "Unweighted"), ("unweighted_exwsb", "Unweighted, no r/wallstreetbets")):
+    for m, lab in (("unweighted", "Unweighted"), ("unweighted_exwsb", "Unweighted, no r/wallstreetbets"), ("weighted", "Score-weighted")):
         for spec, y, d in (("outcome", "d10y_bp", "10y"), ("with_2y", "d10y_bp", "10y, controlling for 2y"), ("outcome", "d2y_bp", "2y"), ("outcome", "dslope_bp", "10y-2y slope")):
             x = r[(r.measure == m) & (r.spec == spec) & (r.outcome == y) & (r["var"] == "r")].iloc[0]
             rows.append((lab, d, x.coef_bp_per_sd, x.se))
@@ -92,16 +92,51 @@ def coverage():
     plt.close(fig)
 
 
+def lead_checks():
+    r = t("lead_result_checks").query("measure == 'unweighted'")
+    specs = [("no_controls", "r", "No controls"), ("baseline", "r", "Baseline"), ("lagged_yield", "r", "+ lagged 2y change"),
+             ("volume", "r", "+ Reddit volume"), ("press_control", "r", "Press instead of all news"), ("no_event_days", "r", "No major-event days"),
+             ("pre_split", "r", "Before 2025-11-24"), ("post_split", "r", "2025-11-24 on"),
+             ("timing_separate", "overnight", "Posts before 08:00 ET only"), ("timing_separate", "session", "Posts 08:00-15:30 ET only")]
+    ll = r[r.spec == "lead_lag"].assign(k=lambda x: x["var"].str[2:].astype(int)).sort_values("k")
+    fig, axs = plt.subplots(1, 2, figsize=(9.5, 3.2), width_ratios=[1.3, 1], layout="constrained")
+    for i, (sp, v, _) in enumerate(specs[::-1]):
+        x = r[(r.spec == sp) & (r["var"] == v)].iloc[0]
+        axs[0].errorbar(x.coef_bp_per_sd, i, xerr=1.96 * x.se, fmt="o", color=BLUE, ms=7, mec="white", mew=1.2, elinewidth=2)
+    axs[0].axvline(0, color=MUTED, lw=0.8)
+    axs[0].set_yticks(range(len(specs)), [x[2] for x in specs[::-1]])
+    axs[0].set_title("Same day", fontsize=9, loc="left")
+    axs[0].set_xlabel("2y change (bp) per 1 SD of unweighted Reddit tone, 95% CI")
+    axs[0].grid(axis="x", color=GRID, lw=0.6)
+    axs[1].errorbar(ll.k, ll.coef_bp_per_sd, yerr=1.96 * ll.se, fmt="o", color=BLUE, ms=7, mec="white", mew=1.2, elinewidth=2)
+    axs[1].axhline(0, color=MUTED, lw=0.8)
+    axs[1].set_xticks(range(-2, 3))
+    axs[1].set_title("Lead/lag", fontsize=9, loc="left")
+    axs[1].set_xlabel("2y change on day t+k, text on day t")
+    axs[1].set_ylabel("bp per 1 SD")
+    axs[1].grid(axis="y", color=GRID, lw=0.6)
+    for ax in axs:
+        ax.set_axisbelow(True)
+    fig.savefig(OUT / "fig5_lead_result_checks.png")
+    plt.close(fig)
+
+
+INTS = ("n", "n_events", "n_baseline", "horizon_min", "k", "docs", "relevant", "up", "down", "neutral", "All")
+
+
 def md(df, cols):
     df = df[cols].copy()
     for c in df.select_dtypes("number"):
-        df[c] = df[c].map(lambda v: "" if pd.isna(v) else (f"{int(v):,}" if c in ("n", "n_events", "n_baseline", "horizon_min", "k") else ("<0.001" if c.startswith("p") and v < 0.001 else f"{v:.3f}")))
+        df[c] = df[c].map(lambda v: "" if pd.isna(v) else (f"{int(v):,}" if c in INTS else ("<0.001" if c.startswith("p") and v < 0.001 else f"{v:.3f}")))
     return "\n".join(["| " + " | ".join(cols) + " |", "|" + "---|" * len(cols)] + ["| " + " | ".join(map(str, r)) + " |" for r in df.fillna("").values])
 
 
 def tables():
     d, r, w, h, e, c, l = (t(x) for x in ("daily_regression", "reddit_robustness", "news_vs_reddit_windows", "hourly_regression", "event_study", "yield_direction_eval", "lead_lag"))
     std = ["coef_bp_per_sd", "se", "p", "p_holm", "n"]
+    rc = t("regime_category")
+    pr = t("yield_direction_holdout_predictions")
+    conf = pd.crosstab(pr.hand_label, pr["lr 500ch (default)"]).reindex(index=["up", "down", "neutral"], columns=["up", "down", "neutral"]).fillna(0).astype(int).rename_axis(index="hand", columns=None).reset_index()
     S = ["# Paper tables (auto-generated; do not edit)", "",
          "## T1 Daily 10y, news and Reddit, 2025+", md(d[d.spec == "news_vs_reddit_2025+"], ["controls", "var", *std]), "",
          "## T2 Long news-only sample", md(d[d.spec == "news_only"], ["controls", "var", *std]), "",
@@ -112,12 +147,24 @@ def tables():
          "## T7 Out of sample", md(d[d.spec.str.startswith("oos")].rename(columns={"coef_bp_per_sd": "value"}), ["spec", "controls", "var", "value", "n"]), "",
          "## T8 Hourly, predictive horizons", md(h[h.outcome.isin(["y1", "y2", "y4"])], ["spec", "outcome", "var", *std]), "",
          "## T9 Event study", md(e, ["horizon_min", "n_events", "n_baseline", "event_mean_bp", "baseline_mean_bp", "slot_matched_diff_bp", "perm_p_one_sided"]), "",
-         "## T10 Yield-direction classifier vs. hand labels", md(c, ["model", "A_hand_macro_f1", "A_hand_ci_lo", "A_hand_ci_hi", "A_hand_kappa", "A_hand_down_f1", "C_batch3_macro_f1"]), ""]
+         "## T10 Yield-direction classifier vs. hand labels", md(c, ["model", "A_hand_macro_f1", "A_hand_ci_lo", "A_hand_ci_hi", "A_hand_kappa", "A_hand_down_f1", "C_batch3_macro_f1"]), "",
+         "## T11 Information categories", md(rc.query("analysis == 'category'"), ["spec", "controls", *std]), "",
+         "## T12 Market regimes", md(rc.query("analysis == 'regime'"), ["spec", "controls", "var", *std]), "",
+         "## T13 Intraday 5/30/60 minutes (about three months; p not multiplicity-adjusted)", md(t("intraday_regression"), ["spec", "horizon_min", "var", "coef_bp_per_sd", "se", "p", "n"]), "",
+         "## T14 Hourly, same hour (y0) and prior hour (y-1, placebo); p not multiplicity-adjusted", md(h[h.outcome.isin(["y0", "y-1"])], ["spec", "outcome", "var", "coef_bp_per_sd", "se", "p", "n"]), "",
+         "## T15 News robustness", md(t("news_robustness"), ["variant", "sample", "controls", "var", *std]), "",
+         "## T16 Event-day interaction and daily lags", md(d[d.spec.isin(["event_interact", "reddit_lags_2025+", "placebo_lead"])], ["spec", "controls", "var", *std]), "",
+         "## T17 Lead result (2y) checks, exploratory", "block_boot floor p = 0.0005; circ_shift floor p = 0.002. OOS uses same-day controls, so it is not a forecast.", "",
+         md(t("lead_result_checks"), ["measure", "spec", "var", *std]), "",
+         "## T18 Descriptive statistics (text in raw units)", md(t("desc_variables"), ["window", "var", "n", "mean", "sd", "min", "median", "max"]), "",
+         "## T19 Documents by source (after cleaning)", md(t("desc_documents"), ["source_type", "source_name", "docs", "relevant", "date_only_share", "first", "last", "finbert_mean", "ydir_mean"]), "",
+         "## T20 Label distribution", md(t("desc_labels"), ["set", "down", "neutral", "up", "All"]), "",
+         "## T21 Classifier confusion, silver-trained default model vs. hand labels (rows = hand)", md(conf, ["hand", "up", "down", "neutral"]), ""]
     (OUT / "tables.md").write_text("\n".join(S))
 
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    for fn in (forest, leadlag, events, coverage, tables):
+    for fn in (forest, leadlag, events, coverage, lead_checks, tables):
         fn()
     print(f"wrote {sorted(p.name for p in OUT.iterdir())}")

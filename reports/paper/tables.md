@@ -244,3 +244,374 @@
 | lr C=1 | 0.626 | 0.560 | 0.690 | 0.528 | 0.356 | 0.663 |
 | lr C=16 | 0.612 | 0.539 | 0.680 | 0.491 | 0.364 | 0.675 |
 | lr 500ch + finbert | 0.607 | 0.541 | 0.669 | 0.520 | 0.286 | 0.615 |
+
+## T11 Information categories
+| spec | controls | coef_bp_per_sd | se | p | p_holm | n |
+|---|---|---|---|---|---|---|
+| cat_news_inflation | no_2y | -0.222 | 0.192 | 0.246 | 1.000 | 5,212 |
+| cat_reddit_inflation_2025+ | no_2y | 0.186 | 0.228 | 0.416 | 1.000 | 472 |
+| cat_news_fed | no_2y | -0.090 | 0.103 | 0.380 | 1.000 | 5,212 |
+| cat_reddit_fed_2025+ | no_2y | 0.273 | 0.188 | 0.146 | 1.000 | 472 |
+| cat_news_growth | no_2y | -0.218 | 0.203 | 0.283 | 1.000 | 5,212 |
+| cat_reddit_growth_2025+ | no_2y | 0.025 | 0.242 | 0.919 | 1.000 | 472 |
+| cat_news_labor | no_2y | -0.339 | 0.221 | 0.125 | 1.000 | 5,212 |
+| cat_reddit_labor_2025+ | no_2y | -0.139 | 0.189 | 0.464 | 1.000 | 472 |
+| cat_news_fiscal | no_2y | 0.045 | 0.241 | 0.853 | 1.000 | 5,212 |
+| cat_reddit_fiscal_2025+ | no_2y | -0.518 | 0.221 | 0.019 | 0.191 | 472 |
+| cat_news_inflation | with_2y | -0.184 | 0.114 | 0.107 | 0.858 | 5,212 |
+| cat_reddit_inflation_2025+ | with_2y | -0.022 | 0.148 | 0.884 | 1.000 | 472 |
+| cat_news_fed | with_2y | -0.083 | 0.065 | 0.202 | 1.000 | 5,212 |
+| cat_reddit_fed_2025+ | with_2y | 0.050 | 0.133 | 0.709 | 1.000 | 472 |
+| cat_news_growth | with_2y | -0.127 | 0.129 | 0.326 | 1.000 | 5,212 |
+| cat_reddit_growth_2025+ | with_2y | -0.144 | 0.134 | 0.281 | 1.000 | 472 |
+| cat_news_labor | with_2y | -0.193 | 0.127 | 0.130 | 0.908 | 5,212 |
+| cat_reddit_labor_2025+ | with_2y | -0.269 | 0.106 | 0.011 | 0.098 | 472 |
+| cat_news_fiscal | with_2y | -0.144 | 0.148 | 0.331 | 1.000 | 5,212 |
+| cat_reddit_fiscal_2025+ | with_2y | -0.382 | 0.105 | <0.001 | 0.003 | 472 |
+
+## T12 Market regimes
+| spec | controls | var | coef_bp_per_sd | se | p | p_holm | n |
+|---|---|---|---|---|---|---|---|
+| reg_vix_high_news | no_2y | news_sent_wmean | -0.073 | 0.136 | 0.591 | 1.000 | 2,369 |
+| reg_vix_high_news | no_2y | news_ydir_wmean | -0.075 | 0.139 | 0.588 | 1.000 | 2,369 |
+| reg_vix_high_news+reddit_2025+ | no_2y | news_sent_wmean | -0.126 | 0.308 | 0.682 | 1.000 | 259 |
+| reg_vix_high_news+reddit_2025+ | no_2y | news_ydir_wmean | -0.260 | 0.192 | 0.175 | 1.000 | 259 |
+| reg_vix_high_news+reddit_2025+ | no_2y | reddit_sent_wmean | 0.382 | 0.318 | 0.229 | 1.000 | 259 |
+| reg_vix_high_news+reddit_2025+ | no_2y | reddit_ydir_wmean | 0.077 | 0.435 | 0.860 | 1.000 | 259 |
+| reg_vix_low_news | no_2y | news_sent_wmean | -0.193 | 0.112 | 0.084 | 1.000 | 2,724 |
+| reg_vix_low_news | no_2y | news_ydir_wmean | -0.086 | 0.116 | 0.457 | 1.000 | 2,724 |
+| reg_vix_low_news+reddit_2025+ | no_2y | news_sent_wmean | -0.125 | 0.355 | 0.724 | 1.000 | 213 |
+| reg_vix_low_news+reddit_2025+ | no_2y | news_ydir_wmean | -0.106 | 0.175 | 0.544 | 1.000 | 213 |
+| reg_vix_low_news+reddit_2025+ | no_2y | reddit_sent_wmean | 0.719 | 0.244 | 0.003 | 0.087 | 213 |
+| reg_vix_low_news+reddit_2025+ | no_2y | reddit_ydir_wmean | 0.148 | 0.397 | 0.710 | 1.000 | 213 |
+| reg_rate_vol_high_news | no_2y | news_sent_wmean | -0.078 | 0.146 | 0.591 | 1.000 | 2,500 |
+| reg_rate_vol_high_news | no_2y | news_ydir_wmean | 0.017 | 0.131 | 0.896 | 1.000 | 2,500 |
+| reg_rate_vol_high_news+reddit_2025+ | no_2y | news_sent_wmean | -0.141 | 0.357 | 0.693 | 1.000 | 223 |
+| reg_rate_vol_high_news+reddit_2025+ | no_2y | news_ydir_wmean | -0.149 | 0.199 | 0.455 | 1.000 | 223 |
+| reg_rate_vol_high_news+reddit_2025+ | no_2y | reddit_sent_wmean | 0.530 | 0.364 | 0.146 | 1.000 | 223 |
+| reg_rate_vol_high_news+reddit_2025+ | no_2y | reddit_ydir_wmean | 0.109 | 0.397 | 0.783 | 1.000 | 223 |
+| reg_rate_vol_low_news | no_2y | news_sent_wmean | -0.145 | 0.105 | 0.169 | 1.000 | 2,574 |
+| reg_rate_vol_low_news | no_2y | news_ydir_wmean | -0.154 | 0.115 | 0.182 | 1.000 | 2,574 |
+| reg_rate_vol_low_news+reddit_2025+ | no_2y | news_sent_wmean | -0.048 | 0.352 | 0.892 | 1.000 | 249 |
+| reg_rate_vol_low_news+reddit_2025+ | no_2y | news_ydir_wmean | -0.331 | 0.218 | 0.130 | 1.000 | 249 |
+| reg_rate_vol_low_news+reddit_2025+ | no_2y | reddit_sent_wmean | 0.725 | 0.223 | 0.001 | 0.032 | 249 |
+| reg_rate_vol_low_news+reddit_2025+ | no_2y | reddit_ydir_wmean | 0.644 | 0.426 | 0.130 | 1.000 | 249 |
+| reg_event_news | no_2y | news_sent_wmean | -0.253 | 0.274 | 0.355 | 1.000 | 684 |
+| reg_event_news | no_2y | news_ydir_wmean | -0.355 | 0.147 | 0.016 | 0.417 | 684 |
+| reg_nonevent_news | no_2y | news_sent_wmean | -0.116 | 0.088 | 0.188 | 1.000 | 4,528 |
+| reg_nonevent_news | no_2y | news_ydir_wmean | 0.103 | 0.103 | 0.316 | 1.000 | 4,528 |
+| reg_vix_high_news | with_2y | news_sent_wmean | 0.135 | 0.100 | 0.175 | 1.000 | 2,369 |
+| reg_vix_high_news | with_2y | news_ydir_wmean | -0.083 | 0.089 | 0.347 | 1.000 | 2,369 |
+| reg_vix_high_news+reddit_2025+ | with_2y | news_sent_wmean | 0.246 | 0.246 | 0.319 | 1.000 | 259 |
+| reg_vix_high_news+reddit_2025+ | with_2y | news_ydir_wmean | -0.104 | 0.116 | 0.373 | 1.000 | 259 |
+| reg_vix_high_news+reddit_2025+ | with_2y | reddit_sent_wmean | -0.102 | 0.187 | 0.585 | 1.000 | 259 |
+| reg_vix_high_news+reddit_2025+ | with_2y | reddit_ydir_wmean | -0.053 | 0.230 | 0.818 | 1.000 | 259 |
+| reg_vix_low_news | with_2y | news_sent_wmean | -0.152 | 0.077 | 0.049 | 1.000 | 2,724 |
+| reg_vix_low_news | with_2y | news_ydir_wmean | -0.125 | 0.080 | 0.117 | 1.000 | 2,724 |
+| reg_vix_low_news+reddit_2025+ | with_2y | news_sent_wmean | -0.096 | 0.219 | 0.661 | 1.000 | 213 |
+| reg_vix_low_news+reddit_2025+ | with_2y | news_ydir_wmean | -0.084 | 0.114 | 0.462 | 1.000 | 213 |
+| reg_vix_low_news+reddit_2025+ | with_2y | reddit_sent_wmean | 0.063 | 0.190 | 0.740 | 1.000 | 213 |
+| reg_vix_low_news+reddit_2025+ | with_2y | reddit_ydir_wmean | 0.064 | 0.230 | 0.780 | 1.000 | 213 |
+| reg_rate_vol_high_news | with_2y | news_sent_wmean | 0.059 | 0.102 | 0.560 | 1.000 | 2,500 |
+| reg_rate_vol_high_news | with_2y | news_ydir_wmean | -0.045 | 0.086 | 0.599 | 1.000 | 2,500 |
+| reg_rate_vol_high_news+reddit_2025+ | with_2y | news_sent_wmean | -0.187 | 0.253 | 0.460 | 1.000 | 223 |
+| reg_rate_vol_high_news+reddit_2025+ | with_2y | news_ydir_wmean | -0.035 | 0.123 | 0.777 | 1.000 | 223 |
+| reg_rate_vol_high_news+reddit_2025+ | with_2y | reddit_sent_wmean | -0.369 | 0.231 | 0.111 | 1.000 | 223 |
+| reg_rate_vol_high_news+reddit_2025+ | with_2y | reddit_ydir_wmean | 0.061 | 0.255 | 0.810 | 1.000 | 223 |
+| reg_rate_vol_low_news | with_2y | news_sent_wmean | -0.071 | 0.077 | 0.351 | 1.000 | 2,574 |
+| reg_rate_vol_low_news | with_2y | news_ydir_wmean | -0.134 | 0.077 | 0.083 | 1.000 | 2,574 |
+| reg_rate_vol_low_news+reddit_2025+ | with_2y | news_sent_wmean | 0.303 | 0.223 | 0.175 | 1.000 | 249 |
+| reg_rate_vol_low_news+reddit_2025+ | with_2y | news_ydir_wmean | -0.153 | 0.116 | 0.188 | 1.000 | 249 |
+| reg_rate_vol_low_news+reddit_2025+ | with_2y | reddit_sent_wmean | 0.232 | 0.140 | 0.098 | 1.000 | 249 |
+| reg_rate_vol_low_news+reddit_2025+ | with_2y | reddit_ydir_wmean | 0.043 | 0.212 | 0.839 | 1.000 | 249 |
+| reg_event_news | with_2y | news_sent_wmean | 0.085 | 0.175 | 0.629 | 1.000 | 684 |
+| reg_event_news | with_2y | news_ydir_wmean | -0.208 | 0.094 | 0.027 | 0.746 | 684 |
+| reg_nonevent_news | with_2y | news_sent_wmean | -0.035 | 0.065 | 0.591 | 1.000 | 4,528 |
+| reg_nonevent_news | with_2y | news_ydir_wmean | -0.037 | 0.069 | 0.586 | 1.000 | 4,528 |
+
+## T13 Intraday 5/30/60 minutes (about three months; p not multiplicity-adjusted)
+| spec | horizon_min | var | coef_bp_per_sd | se | p | n |
+|---|---|---|---|---|---|---|
+| news_only | 5 | news_ydir | -0.017 | 0.020 | 0.395 | 16,089 |
+| news_only | 5 | ydir_pressure | -0.016 | 0.019 | 0.401 | 16,089 |
+| news_plus_reddit | 5 | news_ydir | -0.018 | 0.020 | 0.363 | 16,089 |
+| news_plus_reddit | 5 | reddit_ydir | -0.005 | 0.019 | 0.796 | 16,089 |
+| news_plus_reddit | 5 | shock_score | -0.003 | 0.019 | 0.879 | 16,089 |
+| news_only | 30 | news_ydir | 0.027 | 0.061 | 0.652 | 15,753 |
+| news_only | 30 | ydir_pressure | -0.036 | 0.071 | 0.614 | 15,753 |
+| news_plus_reddit | 30 | news_ydir | 0.021 | 0.060 | 0.723 | 15,753 |
+| news_plus_reddit | 30 | reddit_ydir | -0.034 | 0.061 | 0.577 | 15,753 |
+| news_plus_reddit | 30 | shock_score | 0.040 | 0.074 | 0.589 | 15,753 |
+| news_only | 60 | news_ydir | -0.072 | 0.093 | 0.442 | 15,361 |
+| news_only | 60 | ydir_pressure | -0.082 | 0.108 | 0.446 | 15,361 |
+| news_plus_reddit | 60 | news_ydir | -0.076 | 0.095 | 0.425 | 15,361 |
+| news_plus_reddit | 60 | reddit_ydir | -0.055 | 0.090 | 0.540 | 15,361 |
+| news_plus_reddit | 60 | shock_score | -0.034 | 0.126 | 0.790 | 15,361 |
+
+## T14 Hourly, same hour (y0) and prior hour (y-1, placebo); p not multiplicity-adjusted
+| spec | outcome | var | coef_bp_per_sd | se | p | n |
+|---|---|---|---|---|---|---|
+| all_reddit | y0 | press_ydir_mean | -0.104 | 0.370 | 0.779 | 10,312 |
+| all_reddit | y0 | press_sent_mean | 0.063 | 0.326 | 0.846 | 10,312 |
+| all_reddit | y0 | reddit_ydir_mean | 0.041 | 0.078 | 0.603 | 10,312 |
+| all_reddit | y0 | reddit_sent_mean | -0.042 | 0.066 | 0.532 | 10,312 |
+| all_reddit | y-1 | press_ydir_mean | -0.275 | 0.313 | 0.380 | 9,826 |
+| all_reddit | y-1 | press_sent_mean | -0.009 | 0.369 | 0.981 | 9,826 |
+| all_reddit | y-1 | reddit_ydir_mean | 0.188 | 0.082 | 0.022 | 9,826 |
+| all_reddit | y-1 | reddit_sent_mean | 0.047 | 0.063 | 0.463 | 9,826 |
+| ex_wsb | y0 | press_ydir_mean | -0.103 | 0.369 | 0.781 | 10,312 |
+| ex_wsb | y0 | press_sent_mean | 0.063 | 0.326 | 0.846 | 10,312 |
+| ex_wsb | y0 | reddit_exwsb_ydir_mean | 0.035 | 0.083 | 0.672 | 10,312 |
+| ex_wsb | y0 | reddit_exwsb_sent_mean | -0.042 | 0.075 | 0.574 | 10,312 |
+| ex_wsb | y-1 | press_ydir_mean | -0.270 | 0.314 | 0.390 | 9,826 |
+| ex_wsb | y-1 | press_sent_mean | -0.003 | 0.369 | 0.993 | 9,826 |
+| ex_wsb | y-1 | reddit_exwsb_ydir_mean | 0.090 | 0.090 | 0.317 | 9,826 |
+| ex_wsb | y-1 | reddit_exwsb_sent_mean | 0.092 | 0.071 | 0.196 | 9,826 |
+
+## T15 News robustness
+| variant | sample | controls | var | coef_bp_per_sd | se | p | p_holm | n |
+|---|---|---|---|---|---|---|---|---|
+| baseline | 2006+ | no_2y | news_sent_wmean | -0.135 | 0.086 | 0.116 | 1.000 | 5,212 |
+| baseline | 2006+ | no_2y | news_ydir_wmean | -0.085 | 0.088 | 0.336 | 1.000 | 5,212 |
+| baseline | 2006+ | with_2y | news_sent_wmean | -0.018 | 0.061 | 0.773 | 1.000 | 5,212 |
+| baseline | 2006+ | with_2y | news_ydir_wmean | -0.100 | 0.057 | 0.081 | 1.000 | 5,212 |
+| baseline | 2010+ | no_2y | news_sent_wmean | -0.137 | 0.091 | 0.132 | 1.000 | 4,211 |
+| baseline | 2010+ | no_2y | news_ydir_wmean | -0.113 | 0.088 | 0.200 | 1.000 | 4,211 |
+| baseline | 2010+ | with_2y | news_sent_wmean | -0.049 | 0.068 | 0.471 | 1.000 | 4,211 |
+| baseline | 2010+ | with_2y | news_ydir_wmean | -0.084 | 0.057 | 0.140 | 1.000 | 4,211 |
+| fed_midnight_next_day | 2006+ | no_2y | news_sent_wmean | -0.138 | 0.086 | 0.108 | 1.000 | 5,212 |
+| fed_midnight_next_day | 2006+ | no_2y | news_ydir_wmean | -0.083 | 0.088 | 0.348 | 1.000 | 5,212 |
+| fed_midnight_next_day | 2006+ | with_2y | news_sent_wmean | -0.020 | 0.061 | 0.742 | 1.000 | 5,212 |
+| fed_midnight_next_day | 2006+ | with_2y | news_ydir_wmean | -0.090 | 0.057 | 0.116 | 1.000 | 5,212 |
+| fed_midnight_next_day | 2010+ | no_2y | news_sent_wmean | -0.137 | 0.091 | 0.132 | 1.000 | 4,211 |
+| fed_midnight_next_day | 2010+ | no_2y | news_ydir_wmean | -0.113 | 0.088 | 0.200 | 1.000 | 4,211 |
+| fed_midnight_next_day | 2010+ | with_2y | news_sent_wmean | -0.049 | 0.068 | 0.471 | 1.000 | 4,211 |
+| fed_midnight_next_day | 2010+ | with_2y | news_ydir_wmean | -0.084 | 0.057 | 0.140 | 1.000 | 4,211 |
+| fed_midnight_dropped | 2006+ | no_2y | news_sent_wmean | -0.134 | 0.092 | 0.147 | 1.000 | 5,212 |
+| fed_midnight_dropped | 2006+ | no_2y | news_ydir_wmean | -0.087 | 0.093 | 0.349 | 1.000 | 5,212 |
+| fed_midnight_dropped | 2006+ | with_2y | news_sent_wmean | -0.024 | 0.067 | 0.717 | 1.000 | 5,212 |
+| fed_midnight_dropped | 2006+ | with_2y | news_ydir_wmean | -0.103 | 0.061 | 0.088 | 1.000 | 5,212 |
+| fed_midnight_dropped | 2010+ | no_2y | news_sent_wmean | -0.140 | 0.092 | 0.126 | 1.000 | 4,211 |
+| fed_midnight_dropped | 2010+ | no_2y | news_ydir_wmean | -0.119 | 0.093 | 0.202 | 1.000 | 4,211 |
+| fed_midnight_dropped | 2010+ | with_2y | news_sent_wmean | -0.048 | 0.068 | 0.482 | 1.000 | 4,211 |
+| fed_midnight_dropped | 2010+ | with_2y | news_ydir_wmean | -0.089 | 0.060 | 0.139 | 1.000 | 4,211 |
+| topical_news_only | 2006+ | no_2y | news_sent_wmean | -0.135 | 0.095 | 0.154 | 1.000 | 5,208 |
+| topical_news_only | 2006+ | no_2y | news_ydir_wmean | -0.094 | 0.097 | 0.334 | 1.000 | 5,208 |
+| topical_news_only | 2006+ | with_2y | news_sent_wmean | -0.035 | 0.070 | 0.614 | 1.000 | 5,208 |
+| topical_news_only | 2006+ | with_2y | news_ydir_wmean | -0.098 | 0.063 | 0.119 | 1.000 | 5,208 |
+| topical_news_only | 2010+ | no_2y | news_sent_wmean | -0.111 | 0.093 | 0.236 | 1.000 | 4,211 |
+| topical_news_only | 2010+ | no_2y | news_ydir_wmean | -0.131 | 0.097 | 0.179 | 1.000 | 4,211 |
+| topical_news_only | 2010+ | with_2y | news_sent_wmean | -0.044 | 0.070 | 0.536 | 1.000 | 4,211 |
+| topical_news_only | 2010+ | with_2y | news_ydir_wmean | -0.085 | 0.063 | 0.176 | 1.000 | 4,211 |
+| topical_news_only | 2025+ | no_2y | news_sent_wmean | -0.068 | 0.227 | 0.763 | 1.000 | 472 |
+| topical_news_only | 2025+ | no_2y | news_ydir_wmean | -0.143 | 0.117 | 0.225 | 1.000 | 472 |
+| topical_news_only | 2025+ | with_2y | news_sent_wmean | 0.104 | 0.166 | 0.531 | 1.000 | 472 |
+| topical_news_only | 2025+ | with_2y | news_ydir_wmean | -0.104 | 0.079 | 0.191 | 1.000 | 472 |
+
+## T16 Event-day interaction and daily lags
+| spec | controls | var | coef_bp_per_sd | se | p | p_holm | n |
+|---|---|---|---|---|---|---|---|
+| placebo_lead | no_2y | news_ydir_lead1 | 0.140 | 0.080 | 0.080 | 1.000 | 5,211 |
+| event_interact | no_2y | news_sent_wmean | -0.176 | 0.287 | 0.539 | 1.000 | 472 |
+| event_interact | no_2y | news_ydir_wmean | -0.047 | 0.125 | 0.707 | 1.000 | 472 |
+| event_interact | no_2y | news_sent_wmean_x_event | 0.780 | 0.756 | 0.302 | 1.000 | 472 |
+| event_interact | no_2y | news_ydir_wmean_x_event | -0.629 | 0.387 | 0.104 | 1.000 | 472 |
+| reddit_lags_2025+ | no_2y | reddit_sent_lag1 | -0.377 | 0.218 | 0.084 | 1.000 | 471 |
+| reddit_lags_2025+ | no_2y | reddit_sent_wmean | 0.646 | 0.209 | 0.002 | 0.032 | 471 |
+| reddit_lags_2025+ | no_2y | reddit_sent_lead1 | 0.208 | 0.196 | 0.289 | 1.000 | 471 |
+| placebo_lead | with_2y | news_ydir_lead1 | -0.058 | 0.055 | 0.291 | 1.000 | 5,211 |
+| event_interact | with_2y | news_sent_wmean | 0.130 | 0.197 | 0.509 | 1.000 | 472 |
+| event_interact | with_2y | news_ydir_wmean | -0.124 | 0.091 | 0.177 | 1.000 | 472 |
+| event_interact | with_2y | news_sent_wmean_x_event | -0.270 | 0.518 | 0.602 | 1.000 | 472 |
+| event_interact | with_2y | news_ydir_wmean_x_event | 0.101 | 0.250 | 0.686 | 1.000 | 472 |
+| reddit_lags_2025+ | with_2y | reddit_sent_lag1 | -0.009 | 0.139 | 0.947 | 1.000 | 471 |
+| reddit_lags_2025+ | with_2y | reddit_sent_wmean | -0.077 | 0.135 | 0.567 | 1.000 | 471 |
+| reddit_lags_2025+ | with_2y | reddit_sent_lead1 | 0.154 | 0.127 | 0.228 | 1.000 | 471 |
+
+## T17 Lead result (2y) checks, exploratory
+block_boot floor p = 0.0005; circ_shift floor p = 0.002. OOS uses same-day controls, so it is not a forecast.
+
+| measure | spec | var | coef_bp_per_sd | se | p | p_holm | n |
+|---|---|---|---|---|---|---|---|
+| weighted | no_controls | r | 0.959 | 0.208 | <0.001 | <0.001 | 472 |
+| weighted | baseline | r | 0.904 | 0.194 | <0.001 | <0.001 | 472 |
+| weighted | lagged_yield | r | 0.919 | 0.196 | <0.001 | <0.001 | 472 |
+| weighted | volume | r | 0.920 | 0.193 | <0.001 | <0.001 | 472 |
+| weighted | volume | log_n | 0.124 | 0.232 | 0.592 | 1.000 | 472 |
+| weighted | press_control | r | 0.888 | 0.191 | <0.001 | <0.001 | 472 |
+| weighted | press_control | press_sent_mean | 0.044 | 0.265 | 0.867 | 1.000 | 472 |
+| weighted | press_control | press_ydir_mean | -0.071 | 0.237 | 0.764 | 1.000 | 472 |
+| weighted | lags | r_lag1 | -0.470 | 0.215 | 0.029 | 0.948 | 470 |
+| weighted | lags | r | 0.978 | 0.200 | <0.001 | <0.001 | 470 |
+| weighted | lags | r_lead1 | 0.078 | 0.204 | 0.703 | 1.000 | 470 |
+| weighted | pre_split | r | 0.559 | 0.267 | 0.036 | 1.000 | 223 |
+| weighted | post_split | r | 1.093 | 0.266 | <0.001 | 0.002 | 249 |
+| weighted | no_event_days | r | 0.805 | 0.197 | <0.001 | 0.003 | 413 |
+| weighted | lowvol_interaction | r | 1.071 | 0.318 | <0.001 | 0.033 | 472 |
+| weighted | lowvol_interaction | r_x_lowvol | -0.253 | 0.397 | 0.524 | 1.000 | 472 |
+| weighted | lead_lag | k=-2 | 0.486 | 0.175 | 0.006 | 0.215 | 472 |
+| weighted | lead_lag | k=-1 | 0.205 | 0.201 | 0.308 | 1.000 | 472 |
+| weighted | lead_lag | k=0 | 0.884 | 0.190 | <0.001 | <0.001 | 472 |
+| weighted | lead_lag | k=1 | -0.225 | 0.214 | 0.291 | 1.000 | 471 |
+| weighted | lead_lag | k=2 | 0.062 | 0.201 | 0.758 | 1.000 | 470 |
+| weighted | hac10 | r | 0.904 | 0.184 | <0.001 |  | 472 |
+| weighted | hac20 | r | 0.904 | 0.169 | <0.001 |  | 472 |
+| weighted | loqo_min | r | 0.758 |  |  |  |  |
+| weighted | loqo_max | r | 1.050 |  | <0.001 |  |  |
+| weighted | block_boot | r | 0.904 |  | <0.001 |  | 472 |
+| weighted | circ_shift | r | 0.904 |  | 0.002 |  | 472 |
+| weighted | oos_r2 | OOS_R2 | 0.056 |  |  |  | 192 |
+| unweighted | no_controls | r | 0.800 | 0.216 | <0.001 | 0.010 | 472 |
+| unweighted | baseline | r | 0.784 | 0.196 | <0.001 | 0.004 | 472 |
+| unweighted | lagged_yield | r | 0.792 | 0.198 | <0.001 | 0.004 | 472 |
+| unweighted | volume | r | 0.799 | 0.195 | <0.001 | 0.003 | 472 |
+| unweighted | volume | log_n | 0.115 | 0.234 | 0.622 | 1.000 | 472 |
+| unweighted | press_control | r | 0.763 | 0.192 | <0.001 | 0.004 | 472 |
+| unweighted | press_control | press_sent_mean | 0.028 | 0.263 | 0.915 | 1.000 | 472 |
+| unweighted | press_control | press_ydir_mean | -0.038 | 0.232 | 0.871 | 1.000 | 472 |
+| unweighted | lags | r_lag1 | -0.435 | 0.235 | 0.064 | 1.000 | 470 |
+| unweighted | lags | r | 0.863 | 0.198 | <0.001 | <0.001 | 470 |
+| unweighted | lags | r_lead1 | 0.038 | 0.198 | 0.850 | 1.000 | 470 |
+| unweighted | pre_split | r | 0.462 | 0.289 | 0.110 | 1.000 | 223 |
+| unweighted | post_split | r | 1.034 | 0.266 | <0.001 | 0.005 | 249 |
+| unweighted | no_event_days | r | 0.692 | 0.201 | <0.001 | 0.026 | 413 |
+| unweighted | lowvol_interaction | r | 1.123 | 0.312 | <0.001 | 0.015 | 472 |
+| unweighted | lowvol_interaction | r_x_lowvol | -0.530 | 0.393 | 0.178 | 1.000 | 472 |
+| unweighted | timing_separate | overnight | 0.524 | 0.226 | 0.020 | 0.726 | 472 |
+| unweighted | timing_separate | session | 0.562 | 0.189 | 0.003 | 0.123 | 472 |
+| unweighted | timing_joint | overnight | 0.411 | 0.244 | 0.092 | 1.000 | 472 |
+| unweighted | timing_joint | session | 0.462 | 0.204 | 0.024 | 0.802 | 472 |
+| unweighted | lead_lag | k=-2 | 0.351 | 0.174 | 0.044 | 1.000 | 472 |
+| unweighted | lead_lag | k=-1 | 0.143 | 0.197 | 0.468 | 1.000 | 472 |
+| unweighted | lead_lag | k=0 | 0.762 | 0.193 | <0.001 | 0.004 | 472 |
+| unweighted | lead_lag | k=1 | -0.202 | 0.231 | 0.381 | 1.000 | 471 |
+| unweighted | lead_lag | k=2 | 0.057 | 0.220 | 0.796 | 1.000 | 470 |
+| unweighted | hac10 | r | 0.784 | 0.191 | <0.001 |  | 472 |
+| unweighted | hac20 | r | 0.784 | 0.182 | <0.001 |  | 472 |
+| unweighted | loqo_min | r | 0.580 |  |  |  |  |
+| unweighted | loqo_max | r | 0.943 |  | 0.005 |  |  |
+| unweighted | block_boot | r | 0.784 |  | <0.001 |  | 472 |
+| unweighted | circ_shift | r | 0.784 |  | 0.002 |  | 472 |
+| unweighted | oos_r2 | OOS_R2 | 0.050 |  |  |  | 192 |
+| unweighted_exwsb | no_controls | r | 0.855 | 0.231 | <0.001 | 0.010 | 472 |
+| unweighted_exwsb | baseline | r | 0.805 | 0.201 | <0.001 | 0.004 | 472 |
+| unweighted_exwsb | lagged_yield | r | 0.849 | 0.201 | <0.001 | 0.002 | 472 |
+| unweighted_exwsb | volume | r | 0.828 | 0.205 | <0.001 | 0.003 | 472 |
+| unweighted_exwsb | volume | log_n | 0.144 | 0.238 | 0.545 | 1.000 | 472 |
+| unweighted_exwsb | press_control | r | 0.791 | 0.199 | <0.001 | 0.004 | 472 |
+| unweighted_exwsb | press_control | press_sent_mean | 0.048 | 0.263 | 0.855 | 1.000 | 472 |
+| unweighted_exwsb | press_control | press_ydir_mean | -0.064 | 0.225 | 0.777 | 1.000 | 472 |
+| unweighted_exwsb | lags | r_lag1 | -0.472 | 0.223 | 0.035 | 1.000 | 470 |
+| unweighted_exwsb | lags | r | 0.818 | 0.207 | <0.001 | 0.004 | 470 |
+| unweighted_exwsb | lags | r_lead1 | 0.330 | 0.189 | 0.081 | 1.000 | 470 |
+| unweighted_exwsb | pre_split | r | 0.559 | 0.310 | 0.071 | 1.000 | 223 |
+| unweighted_exwsb | post_split | r | 0.900 | 0.256 | <0.001 | 0.020 | 249 |
+| unweighted_exwsb | no_event_days | r | 0.664 | 0.189 | <0.001 | 0.021 | 413 |
+| unweighted_exwsb | lowvol_interaction | r | 1.013 | 0.323 | 0.002 | 0.071 | 472 |
+| unweighted_exwsb | lowvol_interaction | r_x_lowvol | -0.344 | 0.376 | 0.361 | 1.000 | 472 |
+| unweighted_exwsb | timing_separate | overnight | 0.506 | 0.221 | 0.022 | 0.779 | 472 |
+| unweighted_exwsb | timing_separate | session | 0.611 | 0.217 | 0.005 | 0.192 | 472 |
+| unweighted_exwsb | timing_joint | overnight | 0.398 | 0.231 | 0.085 | 1.000 | 472 |
+| unweighted_exwsb | timing_joint | session | 0.531 | 0.222 | 0.017 | 0.615 | 472 |
+| unweighted_exwsb | lead_lag | k=-2 | 0.450 | 0.182 | 0.014 | 0.517 | 472 |
+| unweighted_exwsb | lead_lag | k=-1 | 0.398 | 0.189 | 0.035 | 1.000 | 472 |
+| unweighted_exwsb | lead_lag | k=0 | 0.787 | 0.198 | <0.001 | 0.004 | 472 |
+| unweighted_exwsb | lead_lag | k=1 | -0.283 | 0.226 | 0.212 | 1.000 | 471 |
+| unweighted_exwsb | lead_lag | k=2 | 0.057 | 0.223 | 0.798 | 1.000 | 470 |
+| unweighted_exwsb | hac10 | r | 0.805 | 0.193 | <0.001 |  | 472 |
+| unweighted_exwsb | hac20 | r | 0.805 | 0.181 | <0.001 |  | 472 |
+| unweighted_exwsb | loqo_min | r | 0.680 |  |  |  |  |
+| unweighted_exwsb | loqo_max | r | 0.951 |  | <0.001 |  |  |
+| unweighted_exwsb | block_boot | r | 0.805 |  | <0.001 |  | 472 |
+| unweighted_exwsb | circ_shift | r | 0.805 |  | 0.002 |  | 472 |
+| unweighted_exwsb | oos_r2 | OOS_R2 | 0.043 |  |  |  | 192 |
+
+## T18 Descriptive statistics (text in raw units)
+| window | var | n | mean | sd | min | median | max |
+|---|---|---|---|---|---|---|---|
+| 2006+ | d10y_bp | 5,226 | 0.010 | 5.681 | -51.000 | 0.000 | 29.000 |
+| 2006+ | d2y_bp | 5,226 | 0.004 | 5.181 | -57.000 | 0.000 | 38.000 |
+| 2006+ | dslope_bp | 5,226 | 0.006 | 3.970 | -28.000 | 0.000 | 42.000 |
+| 2006+ | dvix | 5,226 | 0.005 | 1.953 | -18.710 | -0.100 | 24.860 |
+| 2006+ | dsp500 | 5,226 | 0.033 | 1.222 | -12.765 | 0.073 | 10.424 |
+| 2006+ | ddollar | 5,223 | 0.004 | 0.340 | -2.562 | -0.002 | 1.896 |
+| 2006+ | doil | 5,215 | 0.021 | 2.812 | -28.138 | 0.037 | 42.583 |
+| 2006+ | event_day | 5,226 | 0.131 | 0.337 | 0.000 | 0.000 | 1.000 |
+| 2006+ | news_sent_wmean | 3,620 | -0.042 | 0.355 | -0.962 | 0.007 | 0.944 |
+| 2006+ | news_ydir_wmean | 3,620 | 0.027 | 0.110 | -0.813 | 0.013 | 0.877 |
+| 2006+ | press_sent_mean | 327 | -0.092 | 0.326 | -0.962 | -0.079 | 0.939 |
+| 2006+ | press_ydir_mean | 327 | 0.163 | 0.229 | -0.929 | 0.138 | 0.894 |
+| 2006+ | n_news_relevant | 5,226 | 1.974 | 5.699 | 0.000 | 1.000 | 134.000 |
+| 2006+ | n_press | 5,226 | 0.796 | 5.589 | 0.000 | 0.000 | 133.000 |
+| 2025+ | d10y_bp | 472 | 0.072 | 4.806 | -17.000 | 0.000 | 15.000 |
+| 2025+ | d2y_bp | 472 | 0.081 | 5.284 | -25.000 | 0.000 | 20.000 |
+| 2025+ | dslope_bp | 472 | -0.008 | 3.173 | -12.000 | 0.000 | 14.000 |
+| 2025+ | dvix | 472 | 0.039 | 2.085 | -18.710 | -0.110 | 15.290 |
+| 2025+ | dsp500 | 472 | 0.034 | 1.066 | -6.161 | 0.079 | 9.089 |
+| 2025+ | ddollar | 472 | -0.010 | 0.298 | -1.314 | 0.008 | 0.863 |
+| 2025+ | doil | 472 | 0.045 | 3.097 | -17.516 | 0.067 | 15.350 |
+| 2025+ | event_day | 472 | 0.125 | 0.331 | 0.000 | 0.000 | 1.000 |
+| 2025+ | news_sent_wmean | 416 | -0.063 | 0.282 | -0.917 | -0.030 | 0.898 |
+| 2025+ | news_ydir_wmean | 416 | 0.120 | 0.190 | -0.769 | 0.065 | 0.816 |
+| 2025+ | press_sent_mean | 298 | -0.087 | 0.264 | -0.961 | -0.076 | 0.858 |
+| 2025+ | press_ydir_mean | 298 | 0.177 | 0.230 | -0.929 | 0.154 | 0.894 |
+| 2025+ | reddit_sent_wmean | 472 | -0.158 | 0.108 | -0.468 | -0.156 | 0.292 |
+| 2025+ | reddit_ydir_wmean | 472 | 0.044 | 0.056 | -0.101 | 0.032 | 0.335 |
+| 2025+ | reddit_sent_mean | 472 | -0.127 | 0.087 | -0.394 | -0.128 | 0.221 |
+| 2025+ | reddit_exwsb_sent_mean | 472 | -0.143 | 0.104 | -0.437 | -0.143 | 0.211 |
+| 2025+ | n_news_relevant | 472 | 9.773 | 16.719 | 0.000 | 3.000 | 134.000 |
+| 2025+ | n_press | 472 | 8.742 | 16.640 | 0.000 | 2.000 | 133.000 |
+| 2025+ | n_reddit_relevant | 472 | 99.644 | 71.229 | 27.000 | 82.000 | 872.000 |
+| 2025-11-24+ | d10y_bp | 249 | 0.345 | 4.556 | -17.000 | 1.000 | 15.000 |
+| 2025-11-24+ | d2y_bp | 249 | 0.450 | 5.066 | -16.000 | 0.000 | 17.000 |
+| 2025-11-24+ | dslope_bp | 249 | -0.104 | 2.933 | -9.000 | -0.000 | 10.000 |
+| 2025-11-24+ | dvix | 249 | 0.050 | 1.793 | -5.720 | -0.120 | 11.570 |
+| 2025-11-24+ | dsp500 | 249 | 0.018 | 0.904 | -4.453 | 0.016 | 2.871 |
+| 2025-11-24+ | ddollar | 249 | 0.006 | 0.270 | -1.053 | 0.006 | 0.841 |
+| 2025-11-24+ | doil | 249 | 0.168 | 3.813 | -17.516 | 0.267 | 15.350 |
+| 2025-11-24+ | event_day | 249 | 0.129 | 0.335 | 0.000 | 0.000 | 1.000 |
+| 2025-11-24+ | news_sent_wmean | 246 | -0.095 | 0.241 | -0.874 | -0.086 | 0.555 |
+| 2025-11-24+ | news_ydir_wmean | 246 | 0.185 | 0.203 | -0.417 | 0.181 | 0.815 |
+| 2025-11-24+ | press_sent_mean | 237 | -0.081 | 0.247 | -0.852 | -0.084 | 0.809 |
+| 2025-11-24+ | press_ydir_mean | 237 | 0.206 | 0.236 | -0.929 | 0.216 | 0.894 |
+| 2025-11-24+ | reddit_sent_wmean | 249 | -0.153 | 0.112 | -0.468 | -0.150 | 0.153 |
+| 2025-11-24+ | reddit_ydir_wmean | 249 | 0.060 | 0.066 | -0.065 | 0.047 | 0.335 |
+| 2025-11-24+ | reddit_sent_mean | 249 | -0.132 | 0.089 | -0.394 | -0.131 | 0.155 |
+| 2025-11-24+ | reddit_exwsb_sent_mean | 249 | -0.139 | 0.111 | -0.437 | -0.135 | 0.130 |
+| 2025-11-24+ | n_news_relevant | 249 | 13.530 | 19.185 | 0.000 | 6.000 | 134.000 |
+| 2025-11-24+ | n_press | 249 | 12.522 | 18.987 | 0.000 | 5.000 | 133.000 |
+| 2025-11-24+ | n_reddit_relevant | 249 | 76.807 | 38.461 | 27.000 | 68.000 | 241.000 |
+
+## T19 Documents by source (after cleaning)
+| source_type | source_name | docs | relevant | date_only_share | first | last | finbert_mean | ydir_mean |
+|---|---|---|---|---|---|---|---|---|
+| news | cnbc | 531 | 531 | 0.136 | 2025-01-01 | 2026-11-24 | -0.082 | 0.091 |
+| news | federal_reserve | 6,158 | 6,158 | 0.112 | 2006-01-03 | 2026-11-20 | -0.013 | 0.015 |
+| news | google_news | 2,820 | 2,820 | 0.831 | 2025-10-18 | 2026-11-24 | -0.086 | 0.275 |
+| news | guardian | 68 | 68 | 0.000 | 2014-08-14 | 2026-11-21 | -0.148 | 0.072 |
+| news | investing | 274 | 274 | 0.011 | 2025-01-01 | 2026-11-24 | 0.007 | 0.063 |
+| news | marketwatch | 98 | 98 | 0.000 | 2024-02-27 | 2026-11-24 | -0.103 | 0.021 |
+| news | seeking_alpha | 121 | 121 | 0.000 | 2026-10-16 | 2026-11-24 | 0.027 | 0.034 |
+| news | yahoo_finance | 601 | 601 | 0.003 | 2025-01-01 | 2025-03-18 | -0.051 | 0.082 |
+| reddit | r/bonds | 3,263 | 1,435 | 0.000 | 2025-01-01 | 2026-11-23 | -0.161 | 0.128 |
+| reddit | r/economics | 18,805 | 8,953 | 0.000 | 2025-01-01 | 2026-11-23 | -0.201 | 0.095 |
+| reddit | r/investing | 22,510 | 7,790 | 0.000 | 2025-01-01 | 2026-11-23 | -0.105 | 0.002 |
+| reddit | r/securityanalysis | 544 | 88 | 0.000 | 2025-01-01 | 2026-11-22 | -0.032 | 0.022 |
+| reddit | r/stocks | 22,893 | 9,990 | 0.000 | 2025-01-01 | 2026-11-23 | -0.156 | -0.001 |
+| reddit | r/wallstreetbets | 88,958 | 19,022 | 0.000 | 2025-01-01 | 2026-11-24 | -0.106 | 0.007 |
+
+## T20 Label distribution
+| set | down | neutral | up | All |
+|---|---|---|---|---|
+| hand_batch1 | 8 | 62 | 30 | 100 |
+| hand_batch2 | 9 | 84 | 27 | 120 |
+| hand_batch3 | 11 | 88 | 21 | 120 |
+| silver | 72 | 606 | 172 | 850 |
+| All | 100 | 840 | 250 | 1,190 |
+
+## T21 Classifier confusion, silver-trained default model vs. hand labels (rows = hand)
+| hand | up | down | neutral |
+|---|---|---|---|
+| up | 49 | 10 | 19 |
+| down | 4 | 11 | 13 |
+| neutral | 14 | 11 | 209 |

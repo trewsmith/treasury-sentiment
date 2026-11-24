@@ -1,6 +1,6 @@
 # Data Quality Report — documents_clean.parquet
 
-- **Generated:** 2026-11-24 04:05 UTC by `src/cleaning/pipeline.py`
+- **Generated:** 2026-11-24 19:03 UTC by `src/cleaning/pipeline.py`
 - **Inputs:** `data/processed/news_raw.parquet`, `data/processed/reddit_posts_raw.parquet`
 - **Output:** `data/processed/documents_clean.parquet`
 - **Config:** `configs/cleaning.yaml`
