@@ -1,9 +1,9 @@
 # reddit_posts_raw.parquet — Data Dictionary
 
 - **File:** `data/processed/reddit_posts_raw.parquet`
-- **Rows:** 359,502 (submissions only; comments not collected)
-- **With usable selftext:** 121,327 (rest are link/title-only, removed or deleted)
-- **Created range:** 2025-01-01 00:00:37+00:00 → 2026-11-22 02:33:06+00:00
+- **Rows:** 360,880 (submissions only; comments not collected)
+- **With usable selftext:** 121,834 (rest are link/title-only, removed or deleted)
+- **Created range:** 2025-01-01 00:00:37+00:00 → 2026-11-24 00:49:34+00:00
 
 ## Columns
 
@@ -34,24 +34,24 @@
 
 ## Counts by subreddit
 
-- `r/wallstreetbets`: 202,340
-- `r/stocks`: 75,840
-- `r/investing`: 52,388
-- `r/economics`: 24,550
-- `r/bonds`: 3,674
-- `r/securityanalysis`: 710
+- `r/wallstreetbets`: 203,477
+- `r/stocks`: 75,986
+- `r/investing`: 52,451
+- `r/economics`: 24,570
+- `r/bonds`: 3,685
+- `r/securityanalysis`: 711
 
 ## Counts by ingest_method
 
-- `arctic_shift`: 359,502
+- `arctic_shift`: 360,880
 
 ## Counts by removed_by_category
 
-- `(not removed)`: 173,181
-- `moderator`: 159,077
-- `reddit`: 21,346
+- `(not removed)`: 174,177
+- `moderator`: 159,386
+- `reddit`: 21,418
 - `deleted`: 5,680
-- `content_takedown`: 196
+- `content_takedown`: 197
 - `author`: 16
 - `automod_filtered`: 6
 

@@ -24,6 +24,7 @@ Run from the project root with the virtualenv active (`pip install -r requiremen
 | Sentiment factors | `PYTHONPATH=. python src/features/pipeline.py` | `features_daily.parquet`, `features_intraday.parquet`, `features_dictionary.md` |
 
 | Daily regression | `PYTHONPATH=. python src/modeling/daily_regression.py` | `reports/tables/daily_regression.csv` |
+| Regime + info-category (daily) | `PYTHONPATH=. python src/modeling/regime_category.py` | `reports/tables/regime_category.csv` |
 | Intraday regression (5/30/60 min) | `PYTHONPATH=. python src/modeling/intraday_regression.py` | `reports/tables/intraday_regression.csv` |
 | Event study (macro releases) | `PYTHONPATH=. python src/modeling/event_study.py` | `reports/tables/event_study.csv` |
 | Classifier eval vs hand labels | `PYTHONPATH=. python src/evaluation/yield_direction_eval.py` | `reports/tables/yield_direction_eval.csv` |
@@ -69,7 +70,7 @@ yield-direction cue). Scores are cached per text hash, so re-runs only score new
   `notebooks/01_sentiment_benchmark.ipynb`.
 - **Layer 2, yield direction:** regex rules (`configs/taxonomy.yaml`) plus a classifier trained on
   `data/labels/yield_direction_labels.csv` → `yield_direction_signal` (+ = pushes 10y yields up).
-  Labels are 850 **silver** (LLM-assigned) + 220 **hand** (`labeler == trew`, batches 1–2; sheets use
+  Labels are 850 **silver** (LLM-assigned) + 340 **hand** (`labeler == trew`, batches 1–3; sheets use
   short codes p=up, n=down, u=neutral, which `merge` accepts). Batch 2 is an enriched sample
   (down / uncertain-up oversampled), so use it for per-class metrics, not base rates.
   Add or correct labels in that file and re-run `src/nlp/pipeline.py`. To get a fresh stratified sheet:
