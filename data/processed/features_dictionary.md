@@ -1,7 +1,7 @@
 # Sentiment Feature Dictionary
 
-- **features_daily.parquet:** 5,226 trading days (2006-01-03 → 2026-11-20), 57 columns
-- **features_intraday.parquet:** 232,523 buckets (5min, 30min), 50 columns
+- **features_daily.parquet:** 5,226 trading days (2006-01-03 → 2026-11-20), 62 columns
+- **features_intraday.parquet:** 249,132 buckets (5min, 30min, 60min), 55 columns
 - Built by `src/features/pipeline.py` from `documents_scored.parquet`; config `configs/features.yaml`.
 
 ## Keys and timing
@@ -23,6 +23,8 @@
 | `<src>_neg_spike` | Docs with finbert score ≤ -0.5 |
 | `<src>_<topic>_sent_mean` | Mean tone of docs tagged with the topic |
 | `<src>_<topic>_ydir_mean` | Mean yield-direction signal of docs tagged with the topic |
+| `reddit_exwsb_*_mean` | Unweighted Reddit means excluding r/wallstreetbets |
+| `n_press`, `press_*_mean` | News excluding Federal Reserve documents, unweighted |
 | `n_topic_<topic>` | Docs (both sources) tagged with the topic |
 | `*_z30` (daily) | Surprise: (x − trailing 30-day mean) / trailing std, prior days only |
 | `shock_score` (intraday) | Doc-volume z-score vs the prior 24h of buckets |

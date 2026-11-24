@@ -70,8 +70,8 @@ Topics are multi-label (`topic_<name>` booleans; `topics` joins them with `|`).
 
 ## Classifier evaluation (5-fold stratified CV on the label file)
 
-- Labeled docs: 1,041 (down: 77, neutral: 802, up: 162)
-- **Macro-F1 classifier: 0.646** vs rules-only: 0.432
+- Labeled docs: 1,190 (down: 100, neutral: 840, up: 250)
+- **Macro-F1 classifier: 0.687** vs rules-only: 0.464
 - Labels are **silver** (LLM-assigned): metrics measure agreement with those labels, not
   ground truth. Hand-check a subset before relying on them.
 
@@ -80,13 +80,13 @@ Classifier:
 ```
               precision    recall  f1-score   support
 
-          up      0.648     0.704     0.675       162
-        down      0.414     0.312     0.356        77
-     neutral      0.906     0.911     0.909       802
+          up      0.679     0.788     0.730       250
+        down      0.500     0.380     0.432       100
+     neutral      0.908     0.890     0.899       840
 
-    accuracy                          0.835      1041
-   macro avg      0.656     0.642     0.646      1041
-weighted avg      0.829     0.835     0.831      1041
+    accuracy                          0.826      1190
+   macro avg      0.696     0.686     0.687      1190
+weighted avg      0.826     0.826     0.824      1190
 ```
 
 Rules only:
@@ -94,20 +94,20 @@ Rules only:
 ```
               precision    recall  f1-score   support
 
-          up      0.360     0.580     0.444       162
-        down      0.152     0.662     0.248        77
-     neutral      0.847     0.470     0.605       802
+          up      0.459     0.604     0.522       250
+        down      0.174     0.620     0.271       100
+     neutral      0.798     0.479     0.598       840
 
-    accuracy                          0.501      1041
-   macro avg      0.453     0.571     0.432      1041
-weighted avg      0.720     0.501     0.553      1041
+    accuracy                          0.517      1190
+   macro avg      0.477     0.568     0.464      1190
+weighted avg      0.674     0.517     0.555      1190
 ```
 
 Confusion matrix (classifier, CV):
 
 ```
               pred_up  pred_down  pred_neutral
-true_up           114         10            38
-true_down          15         24            38
-true_neutral       47         24           731
+true_up           197         13            40
+true_down          26         38            36
+true_neutral       67         25           748
 ```

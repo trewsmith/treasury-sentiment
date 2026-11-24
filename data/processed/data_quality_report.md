@@ -1,6 +1,6 @@
 # Data Quality Report — documents_clean.parquet
 
-- **Generated:** 2026-11-24 00:55 UTC by `src/cleaning/pipeline.py`
+- **Generated:** 2026-11-24 04:05 UTC by `src/cleaning/pipeline.py`
 - **Inputs:** `data/processed/news_raw.parquet`, `data/processed/reddit_posts_raw.parquet`
 - **Output:** `data/processed/documents_clean.parquet`
 - **Config:** `configs/cleaning.yaml`
@@ -9,38 +9,40 @@
 
 | source_type | raw rows | clean docs | kept |
 |---|---|---|---|
-| news | 8,105 | 7,874 | 97.1% |
+| news | 11,331 | 10,671 | 94.2% |
 | reddit | 360,880 | 156,973 | 43.5% |
-| **total** | 368,985 | 164,847 | 44.7% |
+| **total** | 372,211 | 167,644 | 45.0% |
 
 ## Cleaning funnel (rows dropped per step, in order)
 
 | step | news dropped | reddit dropped | news remaining | reddit remaining |
 |---|---|---|---|---|
-| reddit: removed / deleted post | 0 | 186,703 | 8,105 | 174,177 |
-| reddit: stickied (pinned) post | 0 | 328 | 8,105 | 173,849 |
-| reddit: moderator/admin post | 0 | 131 | 8,105 | 173,718 |
-| reddit: bot author | 0 | 1,284 | 8,105 | 172,434 |
-| reddit: megathread / recurring thread | 0 | 901 | 8,105 | 171,533 |
-| missing / unparseable timestamp | 92 | 0 | 8,013 | 171,533 |
-| empty text | 0 | 9 | 8,013 | 171,524 |
-| short text (news < 3, reddit < 5 words) | 112 | 11,224 | 7,901 | 160,300 |
-| non-English | 1 | 178 | 7,900 | 160,122 |
-| dedup: exact doc_id | 0 | 0 | 7,900 | 160,122 |
-| dedup: same text within 24h (hash) | 26 | 3,149 | 7,874 | 156,973 |
+| reddit: removed / deleted post | 0 | 186,703 | 11,331 | 174,177 |
+| reddit: stickied (pinned) post | 0 | 328 | 11,331 | 173,849 |
+| reddit: moderator/admin post | 0 | 131 | 11,331 | 173,718 |
+| reddit: bot author | 0 | 1,284 | 11,331 | 172,434 |
+| reddit: megathread / recurring thread | 0 | 901 | 11,331 | 171,533 |
+| missing / unparseable timestamp | 290 | 0 | 11,041 | 171,533 |
+| empty text | 0 | 9 | 11,041 | 171,524 |
+| short text (news < 3, reddit < 5 words) | 113 | 11,224 | 10,928 | 160,300 |
+| non-English | 163 | 178 | 10,765 | 160,122 |
+| dedup: exact doc_id | 0 | 0 | 10,765 | 160,122 |
+| dedup: same text within 24h (hash) | 94 | 3,149 | 10,671 | 156,973 |
 
-Non-English drops by detected language: `de`: 76, `es`: 31, `fr`: 31, `non_latin`: 16, `it`: 13, `pt`: 7, `nl`: 5.
+Non-English drops by detected language: `non_latin`: 159, `de`: 80, `es`: 45, `fr`: 31, `it`: 13, `pt`: 7, `nl`: 6.
 
 ## Clean documents by source
 
 | source_type | source_name | docs | with body | median words | first | last |
 |---|---|---|---|---|---|---|
-| news | federal_reserve | 6,155 | 1,800 | 15 | 2006-01-03 | 2026-11-20 |
-| news | google_news | 1,441 | 2 | 11 | 2025-11-24 | 2026-11-24 |
-| news | cnbc | 147 | 113 | 31 | 2026-10-26 | 2026-11-24 |
-| news | marketwatch | 58 | 10 | 12 | 2024-02-27 | 2026-11-24 |
-| news | seeking_alpha | 37 | 0 | 10 | 2026-11-23 | 2026-11-24 |
-| news | investing | 36 | 0 | 10 | 2026-11-23 | 2026-11-24 |
+| news | federal_reserve | 6,158 | 1,814 | 16 | 2006-01-03 | 2026-11-20 |
+| news | google_news | 2,820 | 5 | 11 | 2025-10-18 | 2026-11-24 |
+| news | yahoo_finance | 601 | 0 | 13 | 2025-01-01 | 2025-03-18 |
+| news | cnbc | 531 | 271 | 21 | 2025-01-01 | 2026-11-24 |
+| news | investing | 274 | 0 | 12 | 2025-01-01 | 2026-11-24 |
+| news | seeking_alpha | 121 | 0 | 10 | 2026-10-16 | 2026-11-24 |
+| news | marketwatch | 98 | 30 | 13 | 2024-02-27 | 2026-11-24 |
+| news | guardian | 68 | 68 | 117 | 2014-08-14 | 2026-11-21 |
 | reddit | r/wallstreetbets | 88,958 | 65,135 | 23 | 2025-01-01 | 2026-11-24 |
 | reddit | r/stocks | 22,893 | 22,874 | 126 | 2025-01-01 | 2026-11-23 |
 | reddit | r/investing | 22,510 | 22,479 | 114 | 2025-01-01 | 2026-11-23 |
@@ -52,58 +54,58 @@ Non-English drops by detected language: `de`: 76, `es`: 31, `fr`: 31, `non_latin
 
 | source_type | p10 | median | p90 | p99 | share with body |
 |---|---|---|---|---|---|
-| news | 7 | 14 | 1801 | 5297 | 24.4% |
+| news | 7 | 13 | 791 | 4938 | 20.5% |
 | reddit | 8 | 41 | 234 | 821 | 72.3% |
 
 ## Time coverage
 
-- **news:** 2006-01-03 05:00 → 2026-11-24 00:32 UTC
+- **news:** 2006-01-03 05:00 → 2026-11-24 04:59 UTC
 - **reddit:** 2025-01-01 00:08 → 2026-11-24 00:49 UTC
-- **Overlap (both sources present):** 2025-01-01 → 2026-11-24 — news 2,174 docs, reddit 156,969 docs
+- **Overlap (both sources present):** 2025-01-01 → 2026-11-24 — news 4,966 docs, reddit 156,973 docs
 
 Documents per month (last 24 months, ET):
 
 | month | news | reddit |
 |---|---|---|
-| 2024-12 | 20 | 57 |
-| 2025-01 | 15 | 8,793 |
-| 2025-02 | 28 | 8,176 |
-| 2025-03 | 17 | 7,694 |
+| 2024-12 | 22 | 57 |
+| 2025-01 | 574 | 8,793 |
+| 2025-02 | 326 | 8,176 |
+| 2025-03 | 108 | 7,694 |
 | 2025-04 | 23 | 12,945 |
 | 2025-05 | 22 | 9,288 |
 | 2025-06 | 32 | 7,252 |
 | 2025-07 | 19 | 9,333 |
 | 2025-08 | 17 | 7,090 |
 | 2025-09 | 19 | 6,794 |
-| 2025-10 | 31 | 8,840 |
-| 2025-11 | 31 | 5,626 |
-| 2025-12 | 74 | 5,309 |
-| 2026-01 | 65 | 6,622 |
-| 2026-02 | 48 | 5,145 |
-| 2026-03 | 86 | 5,148 |
-| 2026-04 | 55 | 5,377 |
-| 2026-05 | 88 | 6,697 |
-| 2026-06 | 69 | 7,963 |
-| 2026-07 | 120 | 4,738 |
-| 2026-08 | 154 | 4,046 |
-| 2026-09 | 413 | 3,695 |
-| 2026-10 | 292 | 4,116 |
-| 2026-11 | 456 | 6,229 |
+| 2025-10 | 66 | 8,840 |
+| 2025-11 | 54 | 5,626 |
+| 2025-12 | 90 | 5,309 |
+| 2026-01 | 93 | 6,622 |
+| 2026-02 | 81 | 5,145 |
+| 2026-03 | 118 | 5,148 |
+| 2026-04 | 104 | 5,377 |
+| 2026-05 | 136 | 6,697 |
+| 2026-06 | 126 | 7,963 |
+| 2026-07 | 208 | 4,738 |
+| 2026-08 | 337 | 4,046 |
+| 2026-09 | 750 | 3,695 |
+| 2026-10 | 808 | 4,116 |
+| 2026-11 | 854 | 6,229 |
 
 ## Timestamp quality and alignment
 
-- **Date-only timestamps:** 690 docs (news items stamped 00:00 ET with no time of day). Use them only for daily analysis; exclude from intraday windows.
-- **yield_date null:** 1,446 docs (after the last available yield observation in market_daily.csv).
+- **Date-only timestamps:** 3,110 docs (news items stamped 00:00 ET with no time of day). Use them only for daily analysis; exclude from intraday windows.
+- **yield_date null:** 1,599 docs (after the last available yield observation in market_daily.csv).
 
 Market session (ET; `regular` = 09:30–16:00 weekdays, holidays not excluded):
 
 | market_session | news | reddit |
 |---|---|---|
-| date_only | 690 | 0 |
-| post | 1,007 | 42,900 |
-| pre | 1,685 | 31,105 |
-| regular | 4,309 | 56,158 |
-| weekend | 183 | 26,810 |
+| date_only | 3,110 | 0 |
+| post | 1,289 | 42,900 |
+| pre | 999 | 31,105 |
+| regular | 4,835 | 56,158 |
+| weekend | 438 | 26,810 |
 
 ## Examples of dropped rows (for auditing filters)
 
@@ -177,34 +179,34 @@ Market session (ET; `regular` = 09:30–16:00 weekdays, holidays not excluded):
 
 - Economic Outlook
 - Fed Watch
-- Banking supervision
+- 現金利水準はFRBのインフレ目標達成に寄与=NY連銀総裁
+- トランプ政権下の米経済に大きな期待=ギャラップ調査
+- 来週の決定会合で利上げ行うか議論=植田日銀総裁
+- FRBは追加利下げに慎重になる可能性=クック理事
 - Risk retention
 - Derivatives regulation
-- Community banking
-- Interchange fees
-- Confirmation hearing
 
 **non-English**
 
-- La Ayuda al consumidor de la Reserva Federal actualmente ofrece una versión de su página web en español
-- mach mich reich..
-- Trade Scheispuplic
-- Calls oder Puts morgen auf TESLA APPLE AMAZON META?
-- Binance futures/hebel gamble action
-- Realbotix 20% im Plus aber alle interessieren sich nur für ewiggestrige Hans Wurst Aktien wie Nvidia.
-- Jp Morgan 💩
-- Offizielle Anfrage Hildegard (98) in diesen Subreddit aufzunehmen
+- アングル : 調整局面入りの米国株 、 一段安の瀬戸際か
+- アングル : 米消費者が自動車駆け込み購入 、 トランプ関税が背中押す
+- 米2月小売売上高0 . 2 % 増 、 予想下回る 先行き不透明感で裁量的支出手控え
+- トランプ氏 、 追加関税警告 EU ・ カナダが米に対抗措置
+- 25年公示地価 、 全国平均2 . 7 % 上昇 6割超の地点でコロナ前上回る
+- コラム : 主導権失う米市場 、 財政出動期待高まる諸外国に資金シフト
+- NY外為市場=ユーロ上昇 、 独財政規律緩和受け 米FOMCに注目
+- NY外為市場=ドル小幅高 、 インフレ鈍化で安心感 関税懸念引き続き重し
 
 **dedup: same text within 24h (hash)**
 
 - Fed holds rates steady despite concerns over inflation
+- Oil jump sends 30-year yields to two-decade high
 - Wall Street rises as tech stocks climb and oil prices, bond yields hold relatively steady
 - Trillion-Dollar Dislocation Hides in Calm Credit Markets
+- Auction result of Treasury Bonds - RIKB 38 0215 - RIKS 29 0917
+- Global bond sell-off deepens, sending borrowing costs higher around the world
+- Federal Reserve is expected to raise its benchmark rate, defying Trump’s demands
 - Here are five key takeaways from the Fed rate decision and Warsh news conference
-- Bond selloff deepens as oil prices and public debt fears jolt markets
-- Tech stocks lead a rally on Wall Street as bond yields ease some more
-- Why bond yields are rising and why everyone should care
-- Federal Reserve rate hike reflects new world of sticky inflation and faster growth
 
 ## Cleaning rules
 
