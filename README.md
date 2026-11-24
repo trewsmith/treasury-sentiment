@@ -7,6 +7,28 @@ This research project examines the incorporation of textual financial informatio
 **Research Group:** Cordova AI Lab
 
 
+## Scope and primary result
+
+**Lead finding (exploratory).** Same-day Reddit tone (FinBERT, score-weighted) and the daily change in the **2-year**
+Treasury yield, 2025+: +0.90 bp per 1 SD, Holm p < 0.001 within the `reddit_robustness.csv` test family (n = 472,
+no 2-year control). Unweighted: +0.78 (Holm p = 0.003); excluding r/wallstreetbets: +0.81 (Holm p = 0.003).
+This outcome was chosen after seeing the results, so it is exploratory, not pre-specified. It is a same-day
+association: it does not show that Reddit causes or predicts yields, and posts may be reacting to yield moves.
+
+**Secondary: 10-year yield.** +0.67 bp in the same table, Holm p = 0.080 (+0.62, Holm p = 0.042 in
+`daily_regression.csv`), and about zero once the 2-year change is controlled for. Not significant after Holm
+correction in the press-covered window (2025-11-24+). No text measure significantly led the 10-year after Holm
+correction in the lead/lag or hourly tests.
+
+**Information categories.** Limited to the five tested: **inflation, Fed, growth, labor, fiscal**
+(`regime_category.csv`). One survives Holm correction: Reddit **fiscal** direction, 2025+, with the 2-year control,
+-0.38 bp (Holm p = 0.003); without that control, -0.52 (p = 0.019, Holm p = 0.19). The sign is opposite to the
+label's meaning (up-pressure text, lower yields), so treat it as unexplained. Hawkish/dovish and risk-on/risk-off are out of scope.
+
+**Limitations.** Press coverage is nearly empty in 2025 Q2-Q3; many press items have date-only times; 5- and
+30-minute tests cover about three months and are exploratory; the yield-direction classifier is weak on "down"
+(F1 0.37 on hand labels).
+
 ## Data pipelines
 
 Run from the project root with the virtualenv active (`pip install -r requirements.txt`).
@@ -14,9 +36,12 @@ Run from the project root with the virtualenv active (`pip install -r requiremen
 | Step | Command | Output (`data/processed/`) |
 |------|---------|----------------------------|
 | Market data (FRED) | `PYTHONPATH=. python src/ingestion/fred_client.py` | `market_daily.csv` |
+| S&P 500 history (FRED has ~10y) | `PYTHONPATH=. python src/ingestion/sp500_history.py` | `sp500_history.csv` |
 | Macro event calendar | `PYTHONPATH=. python src/ingestion/events.py` | `events_calendar.parquet` |
-| Intraday 10y + controls | `PYTHONPATH=. python src/ingestion/intraday.py` | `market_intraday.parquet` |
+| Intraday 10y + controls | `PYTHONPATH=. python src/ingestion/intraday.py` | `market_intraday.parquet`, `market_hourly.parquet` (~730 days) |
 | News | `PYTHONPATH=. python src/ingestion/news/pipeline.py` | `news_raw.parquet` |
+| GDELT headline backfill (resumable, slow) | `PYTHONPATH=. python src/ingestion/news/gdelt_backfill.py --days 7 --sleep 60 --queries rates` | cache in `data/raw/news/gdelt_windows/` |
+| Merge all collected news | `PYTHONPATH=. python src/ingestion/news/merge_history.py` | `news_raw.parquet`, `data/labels/label_texts.parquet` |
 | Reddit posts | `PYTHONPATH=. python src/ingestion/reddit/pipeline.py` | `reddit_posts_raw.parquet` |
 | Clean + align | `PYTHONPATH=. python src/cleaning/pipeline.py` | `documents_clean.parquet`, `data_quality_report.md` |
 | Transformer sentiment | `PYTHONPATH=. .venv-ml/bin/python src/nlp/transformer_scoring.py --model finbert` (then `--model distilbert`) | cache in `data/interim/sentiment/` |
@@ -26,8 +51,13 @@ Run from the project root with the virtualenv active (`pip install -r requiremen
 | Daily regression | `PYTHONPATH=. python src/modeling/daily_regression.py` | `reports/tables/daily_regression.csv` |
 | Regime + info-category (daily) | `PYTHONPATH=. python src/modeling/regime_category.py` | `reports/tables/regime_category.csv` |
 | Intraday regression (5/30/60 min) | `PYTHONPATH=. python src/modeling/intraday_regression.py` | `reports/tables/intraday_regression.csv` |
+| Hourly regression (2025+) | `PYTHONPATH=. python src/modeling/hourly_regression.py` | `reports/tables/hourly_regression.csv` |
+| Reddit robustness (daily) | `PYTHONPATH=. python src/modeling/reddit_robustness.py` | `reports/tables/reddit_robustness.csv` |
+| News robustness + news vs. Reddit windows | `PYTHONPATH=. python src/modeling/news_robustness.py` | `reports/tables/news_robustness.csv`, `news_vs_reddit_windows.csv` |
+| Lead/lag timing (daily) | `PYTHONPATH=. python src/modeling/lead_lag.py` | `reports/tables/lead_lag.csv` |
 | Event study (macro releases) | `PYTHONPATH=. python src/modeling/event_study.py` | `reports/tables/event_study.csv` |
 | Classifier eval vs hand labels | `PYTHONPATH=. python src/evaluation/yield_direction_eval.py` | `reports/tables/yield_direction_eval.csv` |
+| Paper tables + figures (run last) | `PYTHONPATH=. python src/reporting_paper.py` | `reports/paper/` |
 
 Each output has a Markdown data dictionary next to it. Configs live in `configs/`
 (`fred`, `news`, `reddit`, `cleaning`, `events`, `intraday`, `features`, `taxonomy` `.yaml`).
@@ -35,6 +65,9 @@ Each output has a Markdown data dictionary next to it. Configs live in `configs/
 - **Reddit** uses the Arctic Shift archive (no credentials needed). Pulls are cached per
   subreddit-month in `data/raw/reddit/arctic_shift/`, so re-runs only fetch the current month.
   `--with-praw` adds the newest posts through the official API when `REDDIT_*` keys are set in `.env`.
+- **News refreshes merge by default.** Feeds only serve recent items; `--no-merge-existing` drops older articles.
+- **Placeholder times:** Google News midnight-Pacific stamps and date-only CNBC listings are moved to 23:59:59 ET
+  (date-only, next `yield_date`) because their real publication time is unknown.
 - **Cleaning** merges news and Reddit into one canonical schema (`doc_id, source_type,
   source_name, timestamp_utc, headline, body, text, meta`) plus time-alignment columns. Use
   `yield_date` to join documents to `market_daily.csv` `date`.

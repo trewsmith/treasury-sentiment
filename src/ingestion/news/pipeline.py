@@ -5,7 +5,7 @@ Usage:
   PYTHONPATH=. python src/ingestion/news/pipeline.py
   PYTHONPATH=. python src/ingestion/news/pipeline.py --skip-enrich
   PYTHONPATH=. python src/ingestion/news/pipeline.py --with-gdelt
-  PYTHONPATH=. python src/ingestion/news/pipeline.py --merge-existing --skip-fed
+  PYTHONPATH=. python src/ingestion/news/pipeline.py --skip-fed   # always merges with existing unless --no-merge-existing
 """
 
 from __future__ import annotations
@@ -252,8 +252,10 @@ def main() -> None:
     )
     parser.add_argument(
         "--merge-existing",
-        action="store_true",
-        help="Merge with existing data/processed/news_raw.parquet",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Merge with existing news_raw.parquet (default; feeds only serve recent items, so "
+        "--no-merge-existing permanently drops older articles)",
     )
     parser.add_argument(
         "--gdelt-years",

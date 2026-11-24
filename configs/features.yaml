@@ -46,6 +46,6 @@ reddit_weighting: log_score
 
 intraday:
   start_date: "2025-01-01"   # Reddit sample start; news before this is daily-only
-  frequencies: ["5min", "30min"]
+  frequencies: ["5min", "30min", "60min"]
   # Volume-shock z-score uses the trailing 24 hours of buckets
   shock_lookback: "24h"

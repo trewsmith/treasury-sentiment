@@ -23,13 +23,14 @@ import yaml
 from src.utils.paths import (
     CONFIGS_DIR,
     INTRADAY_RAW_DIR,
+    MARKET_HOURLY_PARQUET,
     MARKET_INTRADAY_DICT_PATH,
     MARKET_INTRADAY_PARQUET,
     ensure_data_dirs,
 )
 
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
-HEADERS = {"User-Agent": "Mozilla/5.0 (treasury-sentiment research)"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; research-client)"}
 BAR_COLUMNS = ["timestamp_utc", "open", "high", "low", "close", "volume"]
 VENDOR_DIR = INTRADAY_RAW_DIR / "vendor"
 
@@ -96,17 +97,17 @@ def merge_bars(*frames: pd.DataFrame) -> pd.DataFrame:
     return df.sort_values("timestamp_utc").reset_index(drop=True)[BAR_COLUMNS]
 
 
-def update_symbol(alias: str, spec: dict, interval: str, range_: str, fetch=fetch_yahoo_bars) -> pd.DataFrame:
+def update_symbol(alias: str, spec: dict, interval: str, range_: str, fetch=fetch_yahoo_bars, suffix: str = "") -> pd.DataFrame:
     """Fetch new bars for one symbol, merge into its raw parquet, return the merged frame."""
     INTRADAY_RAW_DIR.mkdir(parents=True, exist_ok=True)
-    path = INTRADAY_RAW_DIR / f"{alias}.parquet"
+    path = INTRADAY_RAW_DIR / f"{alias}{suffix}.parquet"
     old = pd.read_parquet(path) if path.exists() else pd.DataFrame(columns=BAR_COLUMNS)
     try:
         new = fetch(spec["yahoo"], interval, range_)
     except requests.RequestException as exc:
         print(f"  {alias}: Yahoo fetch failed ({exc}); keeping existing bars")
         new = pd.DataFrame(columns=BAR_COLUMNS)
-    merged = merge_bars(old, new, read_vendor_bars(alias))
+    merged = merge_bars(old, new, read_vendor_bars(alias + suffix))
     if len(merged):
         merged.to_parquet(path, index=False)
     return merged
@@ -169,6 +170,19 @@ def main() -> None:
     wide.to_parquet(MARKET_INTRADAY_PARQUET, index=False)
     write_dictionary(cfg, wide)
     print(f"Wrote {MARKET_INTRADAY_PARQUET} ({len(wide):,} bars)")
+
+    if cfg.get("hourly"):
+        h = cfg["hourly"]
+        hbars = {}
+        for alias, spec in cfg["symbols"].items():
+            b = update_symbol(alias, spec, h["interval"], h["yahoo_range"], suffix="_60m")
+            ts = pd.to_datetime(b["timestamp_utc"], utc=True)
+            hbars[alias] = b[(ts.dt.minute == 0) & (ts.dt.second == 0)]  # drop the live partial tick
+            print(f"  {alias + '_60m':14s} {len(hbars[alias]):>7,} bars on the hour of {len(b):,}")
+            time.sleep(0.5)
+        hw = build_wide(hbars)
+        hw.to_parquet(MARKET_HOURLY_PARQUET, index=False)
+        print(f"Wrote {MARKET_HOURLY_PARQUET} ({len(hw):,} bars)")
 
 
 if __name__ == "__main__":

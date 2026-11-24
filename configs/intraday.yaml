@@ -8,6 +8,9 @@
 interval: "5m"
 yahoo_range: "60d"
 
+# Hourly bars reach back ~730 days (free), enough to cover the full Reddit sample for the 60-min horizon.
+hourly: {interval: "60m", yahoo_range: "730d"}
+
 symbols:
   ust10_fut: {yahoo: "ZN=F",      name: "10-Year T-Note futures (front month)", role: "core_outcome"}
   tnx:       {yahoo: "^TNX",      name: "CBOE 10-Year yield index (yield x10)", role: "yield_level"}

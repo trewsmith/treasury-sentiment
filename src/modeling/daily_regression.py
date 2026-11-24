@@ -25,7 +25,7 @@ import pandas as pd
 import statsmodels.api as sm
 from statsmodels.stats.multitest import multipletests
 
-from src.utils.paths import MARKET_DAILY_PATH, PROCESSED_DIR, PROJECT_ROOT
+from src.utils.paths import MARKET_DAILY_PATH, PROCESSED_DIR, PROJECT_ROOT, SP500_HISTORY_PATH
 
 NEWS = ["news_sent_wmean", "news_ydir_wmean"]
 REDDIT = ["reddit_sent_wmean", "reddit_ydir_wmean"]
@@ -33,13 +33,16 @@ CONTROLS = ["d2y_bp", "dvix", "dsp500", "ddollar", "doil", "event_day"]
 HAC_LAGS = 5
 
 
-def build_panel() -> pd.DataFrame:
+def build_panel(features: pd.DataFrame | None = None) -> pd.DataFrame:
     m = pd.read_csv(MARKET_DAILY_PATH, parse_dates=["date"]).set_index("date").sort_index()
+    if SP500_HISTORY_PATH.exists():  # FRED's SP500 only covers ~10 years
+        m["SP500"] = m.SP500.fillna(pd.read_csv(SP500_HISTORY_PATH, parse_dates=["date"]).set_index("date").sp500_yahoo)
     lv = m[["DGS10", "DGS2", "VIXCLS", "SP500", "DTWEXBGS", "DCOILWTICO"]].dropna(subset=["DGS10"]).ffill(limit=3)
     px = pd.DataFrame(
         {
             "d10y_bp": lv.DGS10.diff() * 100,
             "d2y_bp": lv.DGS2.diff() * 100,
+            "dslope_bp": (lv.DGS10 - lv.DGS2).diff() * 100,
             "dvix": lv.VIXCLS.diff(),
             "dsp500": np.log(lv.SP500).diff() * 100,
             "ddollar": np.log(lv.DTWEXBGS).diff() * 100,
@@ -49,9 +52,11 @@ def build_panel() -> pd.DataFrame:
     ev = pd.read_parquet(PROCESSED_DIR / "events_calendar.parquet")
     big = pd.to_datetime(ev.loc[ev.importance >= 3, "event_date"]).dt.normalize().unique()
     px["event_day"] = px.index.isin(big).astype(float)
-    f = pd.read_parquet(PROCESSED_DIR / "features_daily.parquet").set_index("date")
+    f = features if features is not None else pd.read_parquet(PROCESSED_DIR / "features_daily.parquet").set_index("date")
     df = px.join(f, how="inner")
     sig = [c for c in NEWS + REDDIT if c in df]
+    for c in sig:
+        df[f"{c}_raw"] = df[c]  # unstandardized, for real-time scaling in the OOS test
     df[sig] = df[sig].fillna(0.0)  # no docs that day → neutral
     for c in sig:  # standardize on days that have documents
         has = df["n_reddit_relevant" if c.startswith("reddit") else "n_news_relevant"] > 0
@@ -79,23 +84,28 @@ def fit(df, y, xs, label, spec, wald=None):
     return out
 
 
-def oos(df, ctrl, label, window=250):
-    """Rolling one-step OOS fit: controls+news vs controls-only. Returns summary rows."""
-    d = df[["d10y_bp", *NEWS, *ctrl]].dropna()
+def oos(df, ctrl, label, window=250, text=NEWS, tag="news"):
+    """Rolling one-step OOS fit: controls+text vs controls-only. Text is scaled with past data only."""
+    d = df[["d10y_bp", *ctrl]].copy()
+    for c in text:
+        x = df[f"{c}_raw"]
+        past = x.shift(1).expanding(min_periods=30)
+        d[c] = ((x - past.mean()) / past.std()).where(x.notna(), 0.0)
+    d = d.dropna()
     start = d.index.searchsorted(pd.Timestamp("2025-01-01"))
     preds = {"base": [], "full": [], "y": []}
     for i in range(max(start, window), len(d)):
         tr, te = d.iloc[i - window : i], d.iloc[[i]]
-        for k, xs in (("base", ctrl), ("full", NEWS + ctrl)):
+        for k, xs in (("base", ctrl), ("full", text + ctrl)):
             m = sm.OLS(tr["d10y_bp"], sm.add_constant(tr[xs])).fit()
             preds[k].append(float(m.predict(sm.add_constant(te[xs], has_constant="add")).iloc[0]))
         preds["y"].append(float(te["d10y_bp"].iloc[0]))
     y, b, f = (np.array(preds[k]) for k in ("y", "base", "full"))
     sse = lambda e: float(((y - e) ** 2).sum())
-    return [dict(spec="oos_rolling250", controls=label, var="OOS_R2_full_vs_base", coef_bp_per_sd=1 - sse(f) / sse(b),
+    return [dict(spec=f"oos_rolling250_{tag}", controls=label, var="OOS_R2_full_vs_base", coef_bp_per_sd=1 - sse(f) / sse(b),
                  n=len(y)),
-            dict(spec="oos_rolling250", controls=label, var="dir_acc_base", coef_bp_per_sd=float((np.sign(b) == np.sign(y)).mean()), n=len(y)),
-            dict(spec="oos_rolling250", controls=label, var="dir_acc_full", coef_bp_per_sd=float((np.sign(f) == np.sign(y)).mean()), n=len(y))]
+            dict(spec=f"oos_rolling250_{tag}", controls=label, var="dir_acc_base", coef_bp_per_sd=float((np.sign(b) == np.sign(y)).mean()), n=len(y)),
+            dict(spec=f"oos_rolling250_{tag}", controls=label, var="dir_acc_full", coef_bp_per_sd=float((np.sign(f) == np.sign(y)).mean()), n=len(y))]
 
 
 def main() -> None:
@@ -112,6 +122,7 @@ def main() -> None:
         rows += fit(recent, "d10y_bp", NEWS + [f"{c}_x_event" for c in NEWS] + ctrl, label, "event_interact")
         rows += fit(recent, "d10y_bp", ["reddit_sent_lag1", "reddit_sent_wmean", "reddit_sent_lead1"] + ctrl, label, "reddit_lags_2025+")
         rows += oos(df, ctrl, label)
+        rows += oos(recent, ctrl, label, text=REDDIT, tag="reddit")  # first 250 days of 2025+ are training only
     res = pd.DataFrame(rows)
     res["p_holm"] = np.nan
     for label, g in res[res["var"].str.contains("sent|ydir", regex=True) & ~res["var"].str.startswith("WALD") & res.p.notna()].groupby("controls"):

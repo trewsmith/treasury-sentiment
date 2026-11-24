@@ -129,6 +129,25 @@ def dedupe_documents(docs: pd.DataFrame, window_hours: float, funnel: Funnel) ->
     )
 
 
+def fix_placeholder_times(docs: pd.DataFrame) -> pd.DataFrame:
+    """
+    Move fake publication times to 23:59:59 ET of the stated date (true time unknown, so assume latest).
+
+    Google News stamps most items at midnight Pacific (07:00/08:00 UTC) and CNBC listing pages give a
+    date only (00:00 UTC). Taken literally, an afternoon story about today's yield move would look as
+    if it was known before the open. End-of-day stamps map to the next yield_date and are date-only.
+    """
+    out = docs.copy()
+    t = out["timestamp_utc"]
+    pac = t.dt.tz_convert("America/Los_Angeles")
+    mid = lambda x: (x.dt.hour == 0) & (x.dt.minute == 0) & (x.dt.second == 0)
+    fake = ((out["source_name"] == "google_news") & mid(pac)) | ((out["source_name"] == "cnbc") & mid(t))
+    eod = (t.dt.tz_localize(None).dt.normalize() + pd.Timedelta("23:59:59")).dt.tz_localize("America/New_York").dt.tz_convert("UTC")
+    out["timestamp_utc"] = t.where(~fake, eod).astype(t.dtype)
+    print(f"[align] {int(fake.sum()):,} placeholder news timestamps moved to end of day ET")
+    return out
+
+
 def _min_words(cfg: dict) -> dict[str, int]:
     """Per-source_type minimum word counts; a bare int applies to every source."""
     raw = cfg.get("min_words", 5)
@@ -174,9 +193,11 @@ def add_time_alignment(
 
     minute_of_day = et.dt.hour * 60 + et.dt.minute
     at_midnight = (et.dt.hour == 0) & (et.dt.minute == 0) & (et.dt.second == 0)
+    # Placeholder stamps moved to end of day by fix_placeholder_times
+    at_eod = (et.dt.hour == 23) & (et.dt.minute == 59) & (et.dt.second == 59)
     # Only news carries date-only stamps (Fed archive items stored at 00:00 ET);
     # Reddit times are exact to the second.
-    out["timestamp_is_date_only"] = (out["source_type"] == "news") & at_midnight
+    out["timestamp_is_date_only"] = (out["source_type"] == "news") & (at_midnight | at_eod)
 
     session = np.select(
         [minute_of_day < open_m, minute_of_day < close_m],
@@ -241,6 +262,7 @@ def build_documents(
 
     docs = _drop(docs, docs["timestamp_utc"].isna(), "missing / unparseable timestamp", funnel,
                  example_col="headline")
+    docs = fix_placeholder_times(docs)
     if cfg.get("start_date"):
         start = pd.Timestamp(cfg["start_date"], tz="UTC")
         docs = _drop(docs, docs["timestamp_utc"] < start, "before start_date", funnel)

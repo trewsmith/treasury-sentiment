@@ -68,7 +68,7 @@ def score_documents(docs: pd.DataFrame) -> tuple[pd.DataFrame, yc.EvalResult | N
     labels = yc.load_labels()
     evaluation = None
     if labels is not None:
-        train = out.merge(labels[["doc_id", "label"]], on="doc_id", how="inner")
+        train = yc.label_frame(out, labels[["doc_id", "label"]])
         missing = len(labels) - len(train)
         if missing:
             print(f"[yield] {missing} labeled doc_ids not in the corpus (ignored)")

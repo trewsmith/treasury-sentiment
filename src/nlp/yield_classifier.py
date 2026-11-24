@@ -26,10 +26,12 @@ from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
+from src.nlp.taxonomy import load_taxonomy, yield_rule_features
 from src.utils.paths import LABELS_DIR
 
 LABELS = ("up", "down", "neutral")
 LABEL_FILE = LABELS_DIR / "yield_direction_labels.csv"
+LABEL_TEXTS = LABELS_DIR / "label_texts.parquet"  # archived text of every labeled doc
 RULE_FEATURES = ["yield_rule_up_hits", "yield_rule_down_hits"]
 MAX_CHARS = 500  # headline + lead; beats 2000 on hand-label holdout (see reports/tables/yield_direction_eval.csv)
 
@@ -43,6 +45,18 @@ def load_labels(path: Path = LABEL_FILE) -> pd.DataFrame | None:
     if bad.any():
         raise ValueError(f"{int(bad.sum())} rows in {path} have labels outside {LABELS}")
     return labels.drop_duplicates("doc_id", keep="last")
+
+
+def label_frame(docs: pd.DataFrame, labels: pd.DataFrame, texts_path: Path = LABEL_TEXTS) -> pd.DataFrame:
+    """Join labels to corpus docs; labeled docs no longer in the corpus use their archived text."""
+    train = docs.merge(labels, on="doc_id", how="inner")
+    gone = labels[~labels["doc_id"].isin(train["doc_id"])]
+    if len(gone) and texts_path.exists():
+        extra = gone.merge(pd.read_parquet(texts_path), on="doc_id", how="inner").reset_index(drop=True)
+        if len(extra):
+            rules = yield_rule_features(extra["text"], load_taxonomy()["yield_direction"])
+            train = pd.concat([train, extra.join(rules)], ignore_index=True)
+    return train
 
 
 def _truncate(x, max_chars: int = MAX_CHARS):

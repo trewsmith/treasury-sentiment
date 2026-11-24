@@ -41,7 +41,7 @@ def load() -> pd.DataFrame:
     docs = pd.read_parquet(PROCESSED_DIR / "documents_scored.parquet")
     keep = ["doc_id", "source_type", "text", *yc.RULE_FEATURES, "yield_rule_label", *FINBERT]
     labels = yc.load_labels()
-    df = labels.merge(docs[keep], on="doc_id", how="inner")
+    df = yc.label_frame(docs[keep], labels)
     df[FINBERT] = df[FINBERT].fillna(0.0)  # FinBERT only scored relevant docs
     df["is_gold"] = df["labeler"] != SILVER
     return df.reset_index(drop=True)
@@ -77,16 +77,19 @@ def main() -> None:
     gold, silver = df[df.is_gold], df[~df.is_gold]
     b2_ids = set(pd.read_csv(PROJECT_ROOT / "data/labels/hand_batch2_key.csv").doc_id)
     b2 = df[df.doc_id.isin(b2_ids)]  # enriched sample (down/uncertain oversampled): NOT base-rate representative
-    b1 = gold[~gold.doc_id.isin(b2_ids)]
-    print(f"labels {len(df)}: silver {len(silver)}, hand {len(gold)} (batch1 {len(b1)}, batch2 {len(b2)})")
+    b1 = gold[gold.doc_id.isin(set(pd.read_csv(PROJECT_ROOT / "data/labels/hand_batch1_key.csv").doc_id))]
+    b3 = gold[gold.doc_id.isin(set(pd.read_csv(PROJECT_ROOT / "data/labels/hand_batch3_key.csv").doc_id))]
+    print(f"labels {len(df)}: silver {len(silver)}, hand {len(gold)} (batch1 {len(b1)}, batch2 {len(b2)}, batch3 {len(b3)})")
     print(f"hand dist {gold.label.value_counts().to_dict()}; batch2 {b2.label.value_counts().to_dict()}")
     rows = []
     preds = gold[["doc_id", "label"]].rename(columns={"label": "hand_label"}).copy()
     rskf = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=0)
     for name, cfg in MODELS.items():
+        # C: train silver+batches 1-2 -> test batch3 (batch 3 is also enriched; never in B's training set)
         # A: train silver -> test all hand labels.  B: train silver+batch1 -> test batch2 (clean for later rule edits)
         pA, mA = holdout_metrics(name, cfg, silver, gold)
         pB, mB = holdout_metrics(name, cfg, pd.concat([silver, b1]), b2)
+        _, mC = holdout_metrics(name, cfg, pd.concat([silver, b1, b2]), b3)
         preds[name] = pA
         cv = []
         for tr, te in rskf.split(df, df.label):
@@ -94,6 +97,7 @@ def main() -> None:
         row = {"model": name, "cv_macro_f1": np.mean(cv)}
         row.update({f"A_hand_{k}": v for k, v in mA.items()})
         row.update({f"B_batch2_{k}": v for k, v in mB.items()})
+        row.update({f"C_batch3_{k}": v for k, v in mC.items()})
         rows.append(row)
         print(f"{name:26s} A(hand,n={len(gold)}) F1 {mA['macro_f1']:.3f} [{mA['ci_lo']:.2f},{mA['ci_hi']:.2f}] down-F1 {mA['down_f1']:.2f} | "
               f"B(batch2,n={len(b2)}) F1 {mB['macro_f1']:.3f} acc {mB['acc']:.2f} down-F1 {mB['down_f1']:.2f} | CV {np.mean(cv):.3f}")

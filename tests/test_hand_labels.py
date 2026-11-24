@@ -64,4 +64,8 @@ def test_event_study_helpers():
     t = pd.Timestamp("2026-01-05 13:35", tz="UTC")  # price at T = close of bar starting 13:30
     assert abs_move(close, t, 5) == pytest.approx(np.log(1.01) * 1e4, rel=1e-6)
     assert np.isnan(abs_move(close, pd.Timestamp("2030-01-01", tz="UTC"), 5))
-    assert perm_p(np.array([10.0] * 10), np.array([1.0] * 50), n=500) < 0.01
+    s = pd.DataFrame({"slot": ["08:30"] * 60, "is_event": [True] * 10 + [False] * 50, "move": [10.0] * 10 + [1.0] * 50})
+    diff, p = perm_p(s, n=500)
+    assert diff == pytest.approx(9.0) and p < 0.01
+    s["move"] = 1.0  # no effect: every permutation ties
+    assert perm_p(s, n=100)[1] == 1.0

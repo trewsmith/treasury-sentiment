@@ -10,8 +10,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 DEFAULT_HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (compatible; treasury-sentiment/0.1; "
-        "academic-research; +https://github.com/local)"
+        "Mozilla/5.0 (compatible; research-client)"
     ),
     "Accept": "application/rss+xml, application/xml, text/xml, application/json, */*",
 }

@@ -70,6 +70,7 @@ def prepare(docs: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     model = cfg.get("sentiment_model", "finbert")
     out = pd.DataFrame(index=docs.index)
     out["source_type"] = docs["source_type"]
+    out["source_name"] = docs["source_name"]
     out["yield_date"] = docs["yield_date"]
     out["timestamp_utc"] = docs["timestamp_utc"]
     out["date_only"] = docs["timestamp_is_date_only"]
@@ -119,6 +120,14 @@ def aggregate(prep: pd.DataFrame, key: str, cfg: dict) -> pd.DataFrame:
             dt = d[d[f"topic_{t}"]]
             cols[f"{st}_{t}_sent_mean"] = dt.groupby(key)["sent"].mean()
             cols[f"{st}_{t}_ydir_mean"] = dt.groupby(key)["ydir"].mean()
+    if "source_name" in prep.columns:  # Reddit without r/wallstreetbets (robustness; unweighted = no score look-ahead)
+        d = prep[(prep["source_type"] == "reddit") & (prep["source_name"] != "r/wallstreetbets")]
+        cols["reddit_exwsb_sent_mean"] = d.groupby(key)["sent"].mean()
+        cols["reddit_exwsb_ydir_mean"] = d.groupby(key)["ydir"].mean()
+        d = prep[(prep["source_type"] == "news") & (prep["source_name"] != "federal_reserve")]
+        cols["n_press"] = d.groupby(key).size()
+        cols["press_sent_mean"] = d.groupby(key)["sent"].mean()
+        cols["press_ydir_mean"] = d.groupby(key)["ydir"].mean()
     for t in topics:
         cols[f"n_topic_{t}"] = prep[prep[f"topic_{t}"]].groupby(key).size()
     out = pd.DataFrame(cols)
@@ -238,6 +247,8 @@ def write_dictionary(daily: pd.DataFrame, intraday: pd.DataFrame, cfg: dict) -> 
         f"| `<src>_neg_spike` | Docs with {model} score ≤ {cfg.get('negative_spike_threshold')} |",
         "| `<src>_<topic>_sent_mean` | Mean tone of docs tagged with the topic |",
         "| `<src>_<topic>_ydir_mean` | Mean yield-direction signal of docs tagged with the topic |",
+        "| `reddit_exwsb_*_mean` | Unweighted Reddit means excluding r/wallstreetbets |",
+        "| `n_press`, `press_*_mean` | News excluding Federal Reserve documents, unweighted |",
         "| `n_topic_<topic>` | Docs (both sources) tagged with the topic |",
         f"| `*_z{w}` (daily) | Surprise: (x − trailing {w}-day mean) / trailing std, prior days only |",
         "| `shock_score` (intraday) | Doc-volume z-score vs the prior "

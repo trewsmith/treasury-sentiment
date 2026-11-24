@@ -250,3 +250,27 @@ def test_expand_meta(result):
     assert r.loc["reddit:r1", "meta_score"] == 5
     assert r.loc["news:n1", "meta_section"] == "Monetary Policy"
     assert pd.isna(r.loc["news:n1", "meta_score"])
+
+
+def test_placeholder_times_move_to_end_of_day():
+    from src.cleaning.pipeline import fix_placeholder_times
+
+    d = pd.DataFrame({
+        "source_name": ["google_news", "google_news", "google_news", "cnbc", "federal_reserve"],
+        "timestamp_utc": pd.to_datetime(["2026-07-06 07:00:00", "2026-01-06 08:00:00", "2026-07-06 15:31:00",
+                                         "2026-10-28 00:00:00", "2026-01-06 05:00:00"], utc=True),
+    })
+    et = fix_placeholder_times(d).timestamp_utc.dt.tz_convert("America/New_York").dt.strftime("%Y-%m-%d %H:%M:%S").tolist()
+    assert et == ["2026-07-06 23:59:59", "2026-01-06 23:59:59", "2026-07-06 11:31:00", "2026-10-28 23:59:59", "2026-01-06 00:00:00"]
+
+
+def test_label_frame_uses_archived_text(tmp_path):
+    from src.nlp import yield_classifier as yc
+
+    docs = pd.DataFrame({"doc_id": ["a"], "text": ["Yields rise"], "source_type": ["news"], "yield_rule_up_hits": [1],
+                         "yield_rule_down_hits": [0]})
+    labels = pd.DataFrame({"doc_id": ["a", "b"], "label": ["up", "down"]})
+    path = tmp_path / "t.parquet"
+    pd.DataFrame({"doc_id": ["b"], "text": ["Yields fall"], "source_type": ["news"]}).to_parquet(path)
+    out = yc.label_frame(docs, labels, path)
+    assert set(out.doc_id) == {"a", "b"} and out.set_index("doc_id").loc["b", "yield_rule_down_hits"] > 0

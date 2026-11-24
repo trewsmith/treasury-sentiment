@@ -32,7 +32,7 @@ from src.utils.paths import (
 FRED_RELEASE_DATES_URL = "https://api.stlouisfed.org/fred/release/dates"
 FOMC_CALENDAR_URL = "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
 FOMC_HISTORICAL_URL = "https://www.federalreserve.gov/monetarypolicy/fomchistorical{year}.htm"
-HEADERS = {"User-Agent": "Mozilla/5.0 (treasury-sentiment research)"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; research-client)"}
 
 EVENT_COLUMNS = [
     "event_type",
